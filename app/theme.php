@@ -30,49 +30,52 @@ function render_theme($template, $data = []) {
 /**
  * Basic Markdown to HTML converter (Simplified)
  */
-function markdown_to_html($markdown) {
-    // Check if any plugin wants to process this
-    $plugins = glob(__DIR__ . '/../plugins/*/plugin.php');
+function markdown_to_html($content) {
     $config = load_config();
     $enabled_plugins = $config['enabled_plugins'] ?? [];
+    $plugins = glob(__DIR__ . '/../plugins/*/plugin.php');
 
+    // 1. Pre-process markdown (hooks that act on raw markdown)
     foreach ($plugins as $plugin) {
         $plugin_name = basename(dirname($plugin));
         if (!in_array($plugin_name, $enabled_plugins)) continue;
-
         $plugin_data = include $plugin;
-        if (isset($plugin_data['hooks']['markdown_to_html'])) {
-            $markdown = $plugin_data['hooks']['markdown_to_html']($markdown);
+        if (isset($plugin_data['hooks']['markdown_pre'])) {
+            $content = $plugin_data['hooks']['markdown_pre']($content);
         }
     }
 
-    $html = htmlspecialchars($markdown, ENT_NOQUOTES);
+    // 2. If it contains HTML (likely from Jodit), we skip basic markdown to avoid breaking tags
+    // But we still want to support some basic markdown in-between if it is pure markdown
+    $is_html = (strpos($content, '<p>') !== false || strpos($content, '<div>') !== false);
 
-    // Bold
-    $html = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $html);
-    // Italic
-    $html = preg_replace('/\*(.*?)\*/', '<em>$1</em>', $html);
-    // Headers
-    $html = preg_replace('/^### (.*$)/m', '<h3>$1</h3>', $html);
-    $html = preg_replace('/^## (.*$)/m', '<h2>$1</h2>', $html);
-    $html = preg_replace('/^# (.*$)/m', '<h1>$1</h1>', $html);
-    // Links
-    $html = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2">$1</a>', $html);
-    // Line breaks
-    $html = nl2br($html);
+    if (!$is_html) {
+        $content = htmlspecialchars($content, ENT_NOQUOTES);
+        // Bold
+        $content = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $content);
+        // Italic
+        $content = preg_replace('/\*(.*?)\*/', '<em>$1</em>', $content);
+        // Headers
+        $content = preg_replace('/^### (.*$)/m', '<h3>$1</h3>', $content);
+        $content = preg_replace('/^## (.*$)/m', '<h2>$1</h2>', $content);
+        $content = preg_replace('/^# (.*$)/m', '<h1>$1</h1>', $content);
+        // Links
+        $content = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2">$1</a>', $content);
+        // Line breaks
+        $content = nl2br($content);
+    }
 
-    // After markdown conversion, run content hooks (for shortcodes etc)
+    // 3. Post-process (hooks for shortcodes, prism, etc)
     foreach ($plugins as $plugin) {
         $plugin_name = basename(dirname($plugin));
         if (!in_array($plugin_name, $enabled_plugins)) continue;
-
         $plugin_data = include $plugin;
         if (isset($plugin_data['hooks']['render_content'])) {
-            $html = $plugin_data['hooks']['render_content']($html);
+            $content = $plugin_data['hooks']['render_content']($content);
         }
     }
 
-    return $html;
+    return $content;
 }
 
 /**
