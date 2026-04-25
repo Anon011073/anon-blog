@@ -1,0 +1,83 @@
+<?php
+/**
+ * Theme and template handling
+ */
+
+require_once __DIR__ . '/functions.php';
+
+function render_theme($template, $data = []) {
+    $config = load_config();
+    $theme = $config['theme'] ?? 'default';
+    $theme_path = __DIR__ . '/../themes/' . $theme . '/';
+
+    // Define helper to include parts
+    $include_part = function($part, $part_data = []) use ($theme_path, $data, &$include_part) {
+        $merged_data = array_merge($data, $part_data);
+        $merged_data['include_part'] = $include_part;
+        extract($merged_data);
+        include $theme_path . $part . '.php';
+    };
+
+    if (file_exists($theme_path . $template . '.php')) {
+        $data['include_part'] = $include_part;
+        extract($data);
+        include $theme_path . $template . '.php';
+    } else {
+        die("Template $template not found in theme $theme.");
+    }
+}
+
+/**
+ * Basic Markdown to HTML converter (Simplified)
+ */
+function markdown_to_html($markdown) {
+    // Check if any plugin wants to process this
+    // (Simplified plugin hook system)
+    $plugins = glob(__DIR__ . '/../plugins/*/plugin.php');
+    foreach ($plugins as $plugin) {
+        $plugin_data = include $plugin;
+        if (isset($plugin_data['hooks']['markdown_to_html'])) {
+            $markdown = $plugin_data['hooks']['markdown_to_html']($markdown);
+        }
+    }
+
+    $html = htmlspecialchars($markdown, ENT_NOQUOTES);
+
+    // Bold
+    $html = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $html);
+    // Italic
+    $html = preg_replace('/\*(.*?)\*/', '<em>$1</em>', $html);
+    // Headers
+    $html = preg_replace('/^### (.*$)/m', '<h3>$1</h3>', $html);
+    $html = preg_replace('/^## (.*$)/m', '<h2>$1</h2>', $html);
+    $html = preg_replace('/^# (.*$)/m', '<h1>$1</h1>', $html);
+    // Links
+    $html = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2">$1</a>', $html);
+    // Line breaks
+    $html = nl2br($html);
+
+    return $html;
+}
+
+/**
+ * Get plugin assets (CSS/JS)
+ */
+function get_plugin_assets() {
+    $assets = ['css' => [], 'js' => []];
+    $config = load_config();
+    $enabled_plugins = $config['enabled_plugins'] ?? [];
+
+    foreach ($enabled_plugins as $plugin_name) {
+        $plugin_file = __DIR__ . '/../plugins/' . $plugin_name . '/plugin.php';
+        if (file_exists($plugin_file)) {
+            $plugin_data = include $plugin_file;
+            if (isset($plugin_data['assets']['css'])) {
+                foreach ($plugin_data['assets']['css'] as $css) $assets['css'][] = $css;
+            }
+            if (isset($plugin_data['assets']['js'])) {
+                foreach ($plugin_data['assets']['js'] as $js) $assets['js'][] = $js;
+            }
+        }
+    }
+    return $assets;
+}
