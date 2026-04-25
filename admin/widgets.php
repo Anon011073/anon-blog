@@ -86,7 +86,7 @@ $widget_links = $config['widget_links'] ?? [];
             <li><a href="pages.php">Pages</a></li>
             <li><a href="media.php">Media</a></li>
             <li><a href="comments.php">Comments</a></li>
-            <li><a href="settings.php">Settings</a></li>
+            <li><a href="settings.php">Settings</a></li><li><a href="theme_options.php">Theme Options</a></li>
             <li><a href="menu.php">Menu</a></li>
             <li><a href="widgets.php" class="active">Widgets</a></li>
             <li><a href="plugins.php">Plugins</a></li>

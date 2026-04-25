@@ -6,7 +6,21 @@
     </header>
 
     <div class="page-content">
-        <?php echo $page['content']; // Jodit outputs HTML ?>
+        <?php
+        // Run content hooks for pages as well
+        $content = $page['content'];
+        $plugins = glob(__DIR__ . '/../../plugins/*/plugin.php');
+        $enabled_plugins = $config['enabled_plugins'] ?? [];
+        foreach ($plugins as $plugin) {
+            $plugin_name = basename(dirname($plugin));
+            if (!in_array($plugin_name, $enabled_plugins)) continue;
+            $plugin_data = include $plugin;
+            if (isset($plugin_data['hooks']['render_content'])) {
+                $content = $plugin_data['hooks']['render_content']($content);
+            }
+        }
+        echo $content;
+        ?>
     </div>
 </article>
 

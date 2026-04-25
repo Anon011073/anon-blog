@@ -1,50 +1,41 @@
 <?php
 require_once __DIR__ . '/../app/auth.php';
-require_once __DIR__ . '/../app/pages.php';
 require_once __DIR__ . '/../app/functions.php';
 
 require_login();
 
-$slug = $_GET['slug'] ?? '';
-$page_data = null;
 $config = load_config();
-
-if ($slug) {
-    $page_data = get_page($slug);
-}
-
 $error = '';
 $success = '';
+
+$defaults = [
+    'theme_font' => 'sans-serif',
+    'primary_color' => '#007bff',
+    'container_width' => '1100px',
+    'sidebar_width' => '300px',
+];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token($_POST['csrf_token'])) {
         die('CSRF token validation failed.');
     }
 
-    $title = $_POST['title'] ?? '';
-    $content = $_POST['content'] ?? '';
-    $new_slug = $_POST['slug'] ?? generate_slug($title);
-
-    if (empty($title) || empty($content)) {
-        $error = "Title and content are required.";
+    if (isset($_POST['reset'])) {
+        $new_theme_config = $defaults;
     } else {
-        $data = [
-            'title' => $title,
-            'slug' => $new_slug,
-            'content' => $content
+        $new_theme_config = [
+            'theme_font' => $_POST['theme_font'] ?? $defaults['theme_font'],
+            'primary_color' => $_POST['primary_color'] ?? $defaults['primary_color'],
+            'container_width' => $_POST['container_width'] ?? $defaults['container_width'],
+            'sidebar_width' => $_POST['sidebar_width'] ?? $defaults['sidebar_width'],
         ];
+    }
 
-        if ($slug && $slug !== $new_slug) {
-            delete_page($slug);
-        }
-
-        if (save_page($data)) {
-            $success = "Page saved successfully.";
-            $page_data = $data;
-            $slug = $new_slug;
-        } else {
-            $error = "Failed to save page.";
-        }
+    if (update_config($new_theme_config)) {
+        $success = "Theme options updated successfully.";
+        $config = load_config();
+    } else {
+        $error = "Failed to update theme options.";
     }
 }
 ?>
@@ -53,9 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $page_data ? 'Edit Page' : 'Create Page'; ?> - Admin Panel</title>
-    <!-- Jodit CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.2/jodit.min.css"/>
+    <title>Theme Options - Admin Panel</title>
     <style>
         body { font-family: sans-serif; margin: 0; display: flex; min-height: 100vh; background: #f4f4f4; }
         .sidebar { width: 250px; background: #333; color: #fff; padding: 1rem; }
@@ -68,9 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
-        input[type="text"], textarea { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input[type="text"], select, input[type="color"] { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input[type="color"] { width: 100%; height: 50px; cursor: pointer; border: 1px solid #ccc; padding: 2px; }
         .btn { padding: 0.75rem 1.5rem; border-radius: 4px; text-decoration: none; cursor: pointer; border: none; font-size: 1rem; }
         .btn-primary { background: #007bff; color: #fff; }
+        .btn-secondary { background: #6c757d; color: #fff; }
         .error { color: #d9534f; background: #f2dede; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
         .success { color: #5cb85c; background: #dff0d8; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
     </style>
@@ -80,10 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2><?php echo htmlspecialchars($config['site_name']); ?></h2>
         <ul>
             <li><a href="index.php">Posts</a></li>
-            <li><a href="pages.php" class="active">Pages</a></li>
+            <li><a href="pages.php">Pages</a></li>
             <li><a href="media.php">Media</a></li>
             <li><a href="comments.php">Comments</a></li>
-            <li><a href="settings.php">Settings</a></li><li><a href="theme_options.php">Theme Options</a></li>
+            <li><a href="settings.php">Settings</a></li>
+            <li><a href="theme_options.php" class="active">Theme Options</a></li>
             <li><a href="menu.php">Menu</a></li>
             <li><a href="widgets.php">Widgets</a></li>
             <li><a href="plugins.php">Plugins</a></li>
@@ -92,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </ul>
     </div>
     <div class="main-content">
-        <h1><?php echo $page_data ? 'Edit Page' : 'Create New Page'; ?></h1>
+        <h1>Theme Options</h1>
 
         <?php if ($error): ?>
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
@@ -106,32 +98,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
 
                 <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($page_data['title'] ?? ''); ?>" required>
+                    <label for="theme_font">Font Family</label>
+                    <select id="theme_font" name="theme_font">
+                        <option value="sans-serif" <?php echo ($config['theme_font'] ?? '') === 'sans-serif' ? 'selected' : ''; ?>>Sans-serif</option>
+                        <option value="serif" <?php echo ($config['theme_font'] ?? '') === 'serif' ? 'selected' : ''; ?>>Serif</option>
+                        <option value="monospace" <?php echo ($config['theme_font'] ?? '') === 'monospace' ? 'selected' : ''; ?>>Monospace</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="slug">Slug</label>
-                    <input type="text" id="slug" name="slug" value="<?php echo htmlspecialchars($page_data['slug'] ?? ''); ?>">
+                    <label for="primary_color">Primary Accent Color</label>
+                    <input type="color" id="primary_color" name="primary_color" value="<?php echo htmlspecialchars($config['primary_color'] ?? '#007bff'); ?>">
+                    <small>Used for buttons, links, and accents.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="content">Content</label>
-                    <textarea id="content" name="content"><?php echo htmlspecialchars($page_data['content'] ?? ''); ?></textarea>
+                    <label for="container_width">Container Max-Width</label>
+                    <input type="text" id="container_width" name="container_width" value="<?php echo htmlspecialchars($config['container_width'] ?? '1100px'); ?>">
                 </div>
 
-                <button type="submit" class="btn btn-primary">Save Page</button>
-                <a href="pages.php" class="btn">Cancel</a>
+                <div class="form-group">
+                    <label for="sidebar_width">Sidebar Width</label>
+                    <input type="text" id="sidebar_width" name="sidebar_width" value="<?php echo htmlspecialchars($config['sidebar_width'] ?? '300px'); ?>">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="submit" name="reset" class="btn btn-secondary" onclick="return confirm('Reset theme settings to default?')">Reset to Default</button>
             </form>
         </div>
     </div>
-
-    <!-- Jodit JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.2/jodit.min.js"></script>
-    <script>
-        const editor = new Jodit('#content', {
-            height: 400
-        });
-    </script>
 </body>
 </html>

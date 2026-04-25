@@ -91,7 +91,7 @@ $images = glob($uploads_dir . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
             <li><a href="index.php">Posts</a></li>
             <li><a href="media.php" class="active">Media</a></li>
             <li><a href="comments.php">Comments</a></li>
-            <li><a href="settings.php">Settings</a></li>
+            <li><a href="settings.php">Settings</a></li><li><a href="theme_options.php">Theme Options</a></li>
             <li><a href="/" target="_blank">View Site</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>

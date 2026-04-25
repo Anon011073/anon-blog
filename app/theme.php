@@ -32,9 +32,14 @@ function render_theme($template, $data = []) {
  */
 function markdown_to_html($markdown) {
     // Check if any plugin wants to process this
-    // (Simplified plugin hook system)
     $plugins = glob(__DIR__ . '/../plugins/*/plugin.php');
+    $config = load_config();
+    $enabled_plugins = $config['enabled_plugins'] ?? [];
+
     foreach ($plugins as $plugin) {
+        $plugin_name = basename(dirname($plugin));
+        if (!in_array($plugin_name, $enabled_plugins)) continue;
+
         $plugin_data = include $plugin;
         if (isset($plugin_data['hooks']['markdown_to_html'])) {
             $markdown = $plugin_data['hooks']['markdown_to_html']($markdown);
@@ -55,6 +60,17 @@ function markdown_to_html($markdown) {
     $html = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2">$1</a>', $html);
     // Line breaks
     $html = nl2br($html);
+
+    // After markdown conversion, run content hooks (for shortcodes etc)
+    foreach ($plugins as $plugin) {
+        $plugin_name = basename(dirname($plugin));
+        if (!in_array($plugin_name, $enabled_plugins)) continue;
+
+        $plugin_data = include $plugin;
+        if (isset($plugin_data['hooks']['render_content'])) {
+            $html = $plugin_data['hooks']['render_content']($html);
+        }
+    }
 
     return $html;
 }

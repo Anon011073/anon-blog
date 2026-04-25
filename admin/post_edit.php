@@ -67,7 +67,7 @@ $images = glob(__DIR__ . '/../uploads/*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $post ? 'Edit Post' : 'Create Post'; ?> - Admin Panel</title>
     <!-- Jodit CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/jodit@4.0.1/build/jodit.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.2/jodit.min.css"/>
     <style>
         body { font-family: sans-serif; margin: 0; display: flex; min-height: 100vh; background: #f4f4f4; }
         .sidebar { width: 250px; background: #333; color: #fff; padding: 1rem; }
@@ -99,7 +99,7 @@ $images = glob(__DIR__ . '/../uploads/*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
             <li><a href="pages.php">Pages</a></li>
             <li><a href="media.php">Media</a></li>
             <li><a href="comments.php">Comments</a></li>
-            <li><a href="settings.php">Settings</a></li>
+            <li><a href="settings.php">Settings</a></li><li><a href="theme_options.php">Theme Options</a></li>
             <li><a href="menu.php">Menu</a></li>
             <li><a href="widgets.php">Widgets</a></li>
             <li><a href="plugins.php">Plugins</a></li>
@@ -177,9 +177,9 @@ $images = glob(__DIR__ . '/../uploads/*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
     </div>
 
     <!-- Jodit JS -->
-    <script src="https://unpkg.com/jodit@4.0.1/build/jodit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jodit/3.24.2/jodit.min.js"></script>
     <script>
-        const editor = Jodit.make('#content', {
+        const editor = new Jodit('#content', {
             height: 400
         });
 

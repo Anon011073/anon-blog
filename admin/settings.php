@@ -21,17 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $posts_per_page = (int)($_POST['posts_per_page'] ?? 5);
     $sidebar_position = $_POST['sidebar_position'] ?? 'right';
 
-    // Theme customization
-    $theme_font = $_POST['theme_font'] ?? 'sans-serif';
-    $primary_color = $_POST['primary_color'] ?? '#007bff';
-    $container_width = $_POST['container_width'] ?? '1100px';
-    $sidebar_width = $_POST['sidebar_width'] ?? '300px';
-
-    $widgets = [
-        'search' => isset($_POST['widget_search']),
-        'recent_posts' => isset($_POST['widget_recent_posts']),
-    ];
-
     $new_config = [
         'site_name' => $site_name,
         'admin_nickname' => $admin_nickname,
@@ -39,11 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'show_excerpts' => $show_excerpts,
         'posts_per_page' => $posts_per_page,
         'sidebar_position' => $sidebar_position,
-        'widgets' => $widgets,
-        'theme_font' => $theme_font,
-        'primary_color' => $primary_color,
-        'container_width' => $container_width,
-        'sidebar_width' => $sidebar_width,
     ];
 
     // Handle avatar upload
@@ -99,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 2rem; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
-        input[type="text"], input[type="password"], select, input[type="file"], input[type="number"], input[type="color"] { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input[type="text"], input[type="password"], select, input[type="file"], input[type="number"] { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .btn { padding: 0.75rem 1.5rem; border-radius: 4px; text-decoration: none; cursor: pointer; border: none; font-size: 1rem; }
         .btn-primary { background: #007bff; color: #fff; }
         .error { color: #d9534f; background: #f2dede; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
@@ -116,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li><a href="media.php">Media</a></li>
             <li><a href="comments.php">Comments</a></li>
             <li><a href="settings.php" class="active">Settings</a></li>
+            <li><a href="theme_options.php">Theme Options</a></li>
             <li><a href="menu.php">Menu</a></li>
             <li><a href="widgets.php">Widgets</a></li>
             <li><a href="plugins.php">Plugins</a></li>
@@ -166,29 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <option value="left" <?php echo ($config['sidebar_position'] ?? '') === 'left' ? 'selected' : ''; ?>>Left</option>
                         <option value="right" <?php echo ($config['sidebar_position'] ?? '') === 'right' ? 'selected' : ''; ?>>Right</option>
                     </select>
-                </div>
-
-                <hr>
-                <h3>Theme Customization</h3>
-                <div class="form-group">
-                    <label for="theme_font">Font</label>
-                    <select id="theme_font" name="theme_font">
-                        <option value="sans-serif" <?php echo ($config['theme_font'] ?? '') === 'sans-serif' ? 'selected' : ''; ?>>Sans-serif</option>
-                        <option value="serif" <?php echo ($config['theme_font'] ?? '') === 'serif' ? 'selected' : ''; ?>>Serif</option>
-                        <option value="monospace" <?php echo ($config['theme_font'] ?? '') === 'monospace' ? 'selected' : ''; ?>>Monospace</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="primary_color">Primary Color</label>
-                    <input type="color" id="primary_color" name="primary_color" value="<?php echo htmlspecialchars($config['primary_color'] ?? '#007bff'); ?>">
-                </div>
-                <div class="form-group">
-                    <label for="container_width">Container Width</label>
-                    <input type="text" id="container_width" name="container_width" value="<?php echo htmlspecialchars($config['container_width'] ?? '1100px'); ?>">
-                </div>
-                <div class="form-group">
-                    <label for="sidebar_width">Sidebar Width</label>
-                    <input type="text" id="sidebar_width" name="sidebar_width" value="<?php echo htmlspecialchars($config['sidebar_width'] ?? '300px'); ?>">
                 </div>
 
                 <hr>
