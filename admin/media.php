@@ -16,10 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     }
 
     $file = $_FILES['file'];
-    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
-    if (!in_array($file['type'], $allowed_types)) {
-        $error = "Invalid file type. Only JPG, PNG, GIF, and WEBP are allowed.";
+    $check = getimagesize($file['tmp_name']);
+
+    if ($check === false) {
+        $error = "File is not an image.";
+    } elseif (!in_array($ext, $allowed_exts)) {
+        $error = "Invalid file extension. Only JPG, PNG, GIF, and WEBP are allowed.";
     } elseif ($file['size'] > 5000000) { // 5MB limit
         $error = "File is too large. Max 5MB.";
     } else {

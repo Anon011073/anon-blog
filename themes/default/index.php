@@ -7,9 +7,17 @@
 <?php if (empty($posts)): ?>
     <p>No posts found.</p>
 <?php else: ?>
-    <div class="post-list">
+    <?php
+    $template = $config['front_page_template'] ?? 'default';
+    $img_pos = $config['featured_image_position'] ?? 'top';
+
+    // Grid template forces top image
+    if ($template === 'grid') $img_pos = 'top';
+    ?>
+
+    <div class="post-list <?php echo 'template-' . $template; ?>">
         <?php foreach ($posts as $post): ?>
-            <article class="post-card">
+            <article class="post-card <?php echo 'img-' . $img_pos; ?>">
                 <?php if (!empty($post['featured_image'])): ?>
                     <div class="post-thumbnail">
                         <a href="index.php?post=<?php echo $post['slug']; ?>">

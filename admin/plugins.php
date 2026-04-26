@@ -8,7 +8,10 @@ $config = load_config();
 $error = '';
 $success = '';
 
-if (isset($_GET['toggle'])) {
+if (isset($_GET['toggle']) && isset($_GET['token'])) {
+    if (!verify_csrf_token($_GET['token'])) {
+        die('CSRF token validation failed.');
+    }
     $plugin_name = $_GET['toggle'];
     $enabled_plugins = $config['enabled_plugins'] ?? [];
 
@@ -94,9 +97,9 @@ $enabled_plugins = $config['enabled_plugins'] ?? [];
                         </div>
                         <div class="plugin-actions">
                             <?php if ($is_enabled): ?>
-                                <a href="plugins.php?toggle=<?php echo $name; ?>" class="btn btn-danger">Deactivate</a>
+                                <a href="plugins.php?toggle=<?php echo $name; ?>&token=<?php echo get_csrf_token(); ?>" class="btn btn-danger">Deactivate</a>
                             <?php else: ?>
-                                <a href="plugins.php?toggle=<?php echo $name; ?>" class="btn btn-success">Activate</a>
+                                <a href="plugins.php?toggle=<?php echo $name; ?>&token=<?php echo get_csrf_token(); ?>" class="btn btn-success">Activate</a>
                             <?php endif; ?>
                         </div>
                     </div>

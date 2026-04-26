@@ -13,6 +13,8 @@ $defaults = [
     'primary_color' => '#007bff',
     'container_width' => '1100px',
     'sidebar_width' => '300px',
+    'front_page_template' => 'default',
+    'featured_image_position' => 'top',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,6 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'primary_color' => $_POST['primary_color'] ?? $defaults['primary_color'],
             'container_width' => $_POST['container_width'] ?? $defaults['container_width'],
             'sidebar_width' => $_POST['sidebar_width'] ?? $defaults['sidebar_width'],
+            'front_page_template' => $_POST['front_page_template'] ?? $defaults['front_page_template'],
+            'featured_image_position' => $_POST['featured_image_position'] ?? $defaults['featured_image_position'],
         ];
     }
 
@@ -54,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .sidebar ul li a { color: #ccc; text-decoration: none; display: block; padding: 0.5rem; border-radius: 4px; }
         .sidebar ul li a:hover, .sidebar ul li a.active { background: #444; color: #fff; }
         .main-content { flex: 1; padding: 2rem; }
-        .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 2rem; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
         input[type="text"], select, input[type="color"] { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
@@ -97,6 +101,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST">
                 <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
 
+                <h3>Layout Settings</h3>
+                <div class="form-group">
+                    <label for="front_page_template">Front Page Template</label>
+                    <select id="front_page_template" name="front_page_template">
+                        <option value="default" <?php echo ($config['front_page_template'] ?? '') === 'default' ? 'selected' : ''; ?>>Default (List + Sidebar)</option>
+                        <option value="grid" <?php echo ($config['front_page_template'] ?? '') === 'grid' ? 'selected' : ''; ?>>Grid (2-3 Columns, No Sidebar)</option>
+                        <option value="single_column" <?php echo ($config['front_page_template'] ?? '') === 'single_column' ? 'selected' : ''; ?>>Single Column (No Sidebar)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="featured_image_position">Featured Image Position (List & Single Post)</label>
+                    <select id="featured_image_position" name="featured_image_position">
+                        <option value="top" <?php echo ($config['featured_image_position'] ?? '') === 'top' ? 'selected' : ''; ?>>Above Title (Full Width)</option>
+                        <option value="left" <?php echo ($config['featured_image_position'] ?? '') === 'left' ? 'selected' : ''; ?>>Left of Content (Thumbnail)</option>
+                    </select>
+                    <small>Note: Grid template always uses "Above Title".</small>
+                </div>
+
+                <hr>
+                <h3>Style Settings</h3>
                 <div class="form-group">
                     <label for="theme_font">Font Family</label>
                     <select id="theme_font" name="theme_font">
@@ -109,7 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="primary_color">Primary Accent Color</label>
                     <input type="color" id="primary_color" name="primary_color" value="<?php echo htmlspecialchars($config['primary_color'] ?? '#007bff'); ?>">
-                    <small>Used for buttons, links, and accents.</small>
                 </div>
 
                 <div class="form-group">

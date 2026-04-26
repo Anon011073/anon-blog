@@ -1,5 +1,9 @@
 <?php $include_part('header'); ?>
 
+<?php
+$img_pos = $config['featured_image_position'] ?? 'top';
+?>
+
 <article class="post-full">
     <header class="post-header">
         <h1 class="post-title"><?php echo htmlspecialchars($post['title']); ?></h1>
@@ -7,7 +11,7 @@
     </header>
 
     <?php if (!empty($post['featured_image'])): ?>
-        <div class="post-featured-image">
+        <div class="post-featured-image <?php echo 'img-' . $img_pos; ?>">
             <img src="uploads/<?php echo htmlspecialchars($post['featured_image']); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>">
         </div>
     <?php endif; ?>
@@ -26,7 +30,6 @@
 
             if (!empty($comments)):
                 foreach ($comments as $comment):
-                    // Only show approved comments
                     if (!($comment['approved'] ?? false)) continue;
         ?>
                     <div class="comment">

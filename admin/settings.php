@@ -80,7 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .sidebar ul li a { color: #ccc; text-decoration: none; display: block; padding: 0.5rem; border-radius: 4px; }
         .sidebar ul li a:hover, .sidebar ul li a.active { background: #444; color: #fff; }
         .main-content { flex: 1; padding: 2rem; }
-        .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
         input[type="text"], input[type="password"], select, input[type="file"], input[type="number"] { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
@@ -89,6 +90,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .error { color: #d9534f; background: #f2dede; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
         .success { color: #5cb85c; background: #dff0d8; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
         .avatar-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 1px solid #ccc; }
+
+        .section-header { cursor: pointer; display: flex; align-items: center; justify-content: space-between; background: #eee; padding: 10px 15px; border-radius: 4px; margin-bottom: 10px; }
+        .section-content { padding: 15px; border: 1px solid #eee; border-top: none; border-radius: 0 0 4px 4px; margin-bottom: 20px; }
+        .icon { font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -109,7 +114,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </ul>
     </div>
     <div class="main-content">
-        <h1>Settings</h1>
+        <div class="header">
+            <h1>General Settings</h1>
+        </div>
 
         <?php if ($error): ?>
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
@@ -118,66 +125,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="success"><?php echo htmlspecialchars($success); ?></div>
         <?php endif; ?>
 
-        <div class="card">
-            <form method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
 
-                <h3>Site Settings</h3>
-                <div class="form-group">
-                    <label for="site_name">Site Name</label>
-                    <input type="text" id="site_name" name="site_name" value="<?php echo htmlspecialchars($config['site_name']); ?>" required>
+            <div class="card">
+                <div class="section-header" onclick="toggleSection('site-settings')">
+                    <span><strong>⚙️ Site Settings</strong></span>
+                    <span class="icon" id="site-settings-icon">▼</span>
+                </div>
+                <div id="site-settings" class="section-content">
+                    <div class="form-group">
+                        <label for="site_name">Site Name</label>
+                        <input type="text" id="site_name" name="site_name" value="<?php echo htmlspecialchars($config['site_name']); ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="comments_enabled" <?php echo ($config['comments_enabled'] ?? true) ? 'checked' : ''; ?>> Enable comments globally
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="show_excerpts" <?php echo ($config['show_excerpts'] ?? true) ? 'checked' : ''; ?>> Show excerpts on homepage
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="posts_per_page">Posts per page</label>
+                        <input type="number" id="posts_per_page" name="posts_per_page" value="<?php echo htmlspecialchars($config['posts_per_page'] ?? 5); ?>" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sidebar_position">Sidebar Position (Default Template)</label>
+                        <select id="sidebar_position" name="sidebar_position">
+                            <option value="left" <?php echo ($config['sidebar_position'] ?? '') === 'left' ? 'selected' : ''; ?>>Left</option>
+                            <option value="right" <?php echo ($config['sidebar_position'] ?? '') === 'right' ? 'selected' : ''; ?>>Right</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" name="comments_enabled" <?php echo ($config['comments_enabled'] ?? true) ? 'checked' : ''; ?>> Enable comments globally
-                    </label>
+                <div class="section-header" onclick="toggleSection('profile-settings')">
+                    <span><strong>👤 Profile Settings</strong></span>
+                    <span class="icon" id="profile-settings-icon">▼</span>
+                </div>
+                <div id="profile-settings" class="section-content">
+                    <div class="form-group">
+                        <label for="admin_nickname">Admin Nickname</label>
+                        <input type="text" id="admin_nickname" name="admin_nickname" value="<?php echo htmlspecialchars($config['admin_nickname'] ?? 'Admin'); ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Admin Avatar</label>
+                        <?php if (!empty($config['admin_avatar'])): ?>
+                            <img src="../uploads/<?php echo htmlspecialchars($config['admin_avatar']); ?>" class="avatar-preview" alt="Avatar">
+                        <?php endif; ?>
+                        <input type="file" name="avatar">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" name="show_excerpts" <?php echo ($config['show_excerpts'] ?? true) ? 'checked' : ''; ?>> Show excerpts on homepage
-                    </label>
+                <div class="section-header" onclick="toggleSection('security-settings')">
+                    <span><strong>🔒 Security</strong></span>
+                    <span class="icon" id="security-settings-icon">▼</span>
+                </div>
+                <div id="security-settings" class="section-content">
+                    <div class="form-group">
+                        <label for="new_password">Change Admin Password (leave blank to keep current)</label>
+                        <input type="password" id="new_password" name="new_password">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="posts_per_page">Posts per page</label>
-                    <input type="number" id="posts_per_page" name="posts_per_page" value="<?php echo htmlspecialchars($config['posts_per_page'] ?? 5); ?>" min="1">
+                <div style="padding: 15px;">
+                    <button type="submit" class="btn btn-primary">Save All Settings</button>
                 </div>
-
-                <div class="form-group">
-                    <label for="sidebar_position">Sidebar Position</label>
-                    <select id="sidebar_position" name="sidebar_position">
-                        <option value="left" <?php echo ($config['sidebar_position'] ?? '') === 'left' ? 'selected' : ''; ?>>Left</option>
-                        <option value="right" <?php echo ($config['sidebar_position'] ?? '') === 'right' ? 'selected' : ''; ?>>Right</option>
-                    </select>
-                </div>
-
-                <hr>
-                <h3>Profile Settings</h3>
-                <div class="form-group">
-                    <label for="admin_nickname">Admin Nickname</label>
-                    <input type="text" id="admin_nickname" name="admin_nickname" value="<?php echo htmlspecialchars($config['admin_nickname'] ?? 'Admin'); ?>">
-                </div>
-
-                <div class="form-group">
-                    <label>Admin Avatar</label>
-                    <?php if (!empty($config['admin_avatar'])): ?>
-                        <img src="../uploads/<?php echo htmlspecialchars($config['admin_avatar']); ?>" class="avatar-preview" alt="Avatar">
-                    <?php endif; ?>
-                    <input type="file" name="avatar">
-                </div>
-
-                <hr>
-                <h3>Security</h3>
-                <div class="form-group">
-                    <label for="new_password">Change Admin Password (leave blank to keep current)</label>
-                    <input type="password" id="new_password" name="new_password">
-                </div>
-
-                <button type="submit" class="btn btn-primary">Save Settings</button>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
+
+    <script>
+        function toggleSection(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById(id + '-icon');
+            if (el.style.display === 'none') {
+                el.style.display = 'block';
+                icon.textContent = '▼';
+            } else {
+                el.style.display = 'none';
+                icon.textContent = '▶';
+            }
+        }
+        // Show all by default as requested "or just show all the categories at once"
+        // but providing the toggle functionality as well.
+    </script>
 </body>
 </html>

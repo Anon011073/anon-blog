@@ -27,7 +27,13 @@
         }
     </script>
 </head>
-<body class="<?php echo ($config['sidebar_position'] ?? 'right') === 'left' ? 'sidebar-left' : ''; ?>">
+<?php
+$body_classes = [];
+if (($config['sidebar_position'] ?? 'right') === 'left') $body_classes[] = 'sidebar-left';
+if (($config['front_page_template'] ?? 'default') !== 'default' && !isset($post) && !isset($page)) $body_classes[] = 'no-sidebar';
+// For single post/page, we might also want no sidebar if configured, but request only mentioned front page templates
+?>
+<body class="<?php echo implode(' ', $body_classes); ?>">
     <header class="site-header">
         <div class="container">
             <div class="header-inner">
