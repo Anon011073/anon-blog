@@ -1,0 +1,4 @@
+[Mon Apr 27 23:47:22 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Mon Apr 27 23:47:24 2026] [::1]:51012 Accepted
+[Mon Apr 27 23:47:24 2026] [::1]:51012 [200]: GET /install.php
+[Mon Apr 27 23:47:24 2026] [::1]:51012 Closing
