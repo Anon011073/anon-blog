@@ -9,29 +9,24 @@
     </div>
     <footer class="site-footer">
         <div class="container">
-            <div class="footer-widgets">
-                <div class="footer-widget">
-                    <?php
-                    $f1_widgets = $config['widget_areas']['footer1'] ?? [];
-                    if (empty($f1_widgets)) echo '<h3>About</h3><p>Welcome to '.htmlspecialchars($config['site_name']).'</p>';
-                    else foreach ($f1_widgets as $w) $include_part('widget-' . $w);
-                    ?>
+            <?php
+            $f1 = $config['widget_areas']['footer1'] ?? [];
+            $f2 = $config['widget_areas']['footer2'] ?? [];
+            $f3 = $config['widget_areas']['footer3'] ?? [];
+            if (!empty($f1) || !empty($f2) || !empty($f3)):
+            ?>
+                <div class="footer-widgets">
+                    <div class="footer-widget">
+                        <?php foreach ($f1 as $w) $include_part('widget-' . $w); ?>
+                    </div>
+                    <div class="footer-widget">
+                        <?php foreach ($f2 as $w) $include_part('widget-' . $w); ?>
+                    </div>
+                    <div class="footer-widget">
+                        <?php foreach ($f3 as $w) $include_part('widget-' . $w); ?>
+                    </div>
                 </div>
-                <div class="footer-widget">
-                    <?php
-                    $f2_widgets = $config['widget_areas']['footer2'] ?? [];
-                    if (empty($f2_widgets)) echo '<h3>Links</h3><ul><li><a href="index.php">Home</a></li></ul>';
-                    else foreach ($f2_widgets as $w) $include_part('widget-' . $w);
-                    ?>
-                </div>
-                <div class="footer-widget">
-                    <?php
-                    $f3_widgets = $config['widget_areas']['footer3'] ?? [];
-                    if (empty($f3_widgets)) $include_part('widget-recent_posts', ['limit' => 3]);
-                    else foreach ($f3_widgets as $w) $include_part('widget-' . $w);
-                    ?>
-                </div>
-            </div>
+            <?php endif; ?>
             <div class="footer-bottom">
                 <a href="#" id="back-to-top">Back to top ↑</a><br>
                 &copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($config['site_name']); ?>. Built with Jules CMS.

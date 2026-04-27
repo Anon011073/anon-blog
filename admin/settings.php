@@ -114,11 +114,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
 
             <div class="card">
-                <div class="section-header" onclick="toggleSection('site-settings')">
+                <div class="section-header">
                     <span><strong>⚙️ Site Settings</strong></span>
-                    <span class="icon" id="site-settings-icon">▼</span>
                 </div>
-                <div id="site-settings" class="section-content">
+                <div class="section-content">
                     <div class="form-group">
                         <label for="site_name">Site Name</label>
                         <input type="text" id="site_name" name="site_name" value="<?php echo htmlspecialchars($config['site_name']); ?>" required>
@@ -150,11 +149,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <div class="section-header" onclick="toggleSection('profile-settings')">
+                <div class="section-header">
                     <span><strong>👤 Profile Settings</strong></span>
-                    <span class="icon" id="profile-settings-icon">▼</span>
                 </div>
-                <div id="profile-settings" class="section-content">
+                <div class="section-content">
                     <div class="form-group">
                         <label for="admin_nickname">Admin Nickname</label>
                         <input type="text" id="admin_nickname" name="admin_nickname" value="<?php echo htmlspecialchars($config['admin_nickname'] ?? 'Admin'); ?>">
@@ -169,11 +167,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <div class="section-header" onclick="toggleSection('security-settings')">
+                <div class="section-header">
                     <span><strong>🔒 Security</strong></span>
-                    <span class="icon" id="security-settings-icon">▼</span>
                 </div>
-                <div id="security-settings" class="section-content">
+                <div class="section-content">
                     <div class="form-group">
                         <label for="new_password">Change Admin Password (leave blank to keep current)</label>
                         <input type="password" id="new_password" name="new_password">
@@ -187,20 +184,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
-    <script>
-        function toggleSection(id) {
-            const el = document.getElementById(id);
-            const icon = document.getElementById(id + '-icon');
-            if (el.style.display === 'none') {
-                el.style.display = 'block';
-                icon.textContent = '▼';
-            } else {
-                el.style.display = 'none';
-                icon.textContent = '▶';
-            }
-        }
-        // Show all by default as requested "or just show all the categories at once"
-        // but providing the toggle functionality as well.
-    </script>
 </body>
 </html>

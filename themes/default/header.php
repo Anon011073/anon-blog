@@ -31,7 +31,7 @@
             --container-width: <?php echo $config['container_width'] ?? '1100px'; ?>;
             --sidebar-width: <?php echo $config['sidebar_width'] ?? '300px'; ?>;
         }
-        body { font-family: var(--font-family); }
+        <?php echo $config['custom_css'] ?? ''; ?>
         .container { max-width: var(--container-width); }
         .site-sidebar { width: var(--sidebar-width); }
         .btn, .btn-primary, .read-more, .widget h3 { --accent-color: <?php echo $config['primary_color'] ?? '#007bff'; ?>; }

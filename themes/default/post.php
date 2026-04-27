@@ -20,6 +20,16 @@ $img_pos = $config['featured_image_position'] ?? 'top';
         <?php echo markdown_to_html($post['content']); ?>
     </div>
 
+    <div class="post-author">
+        <?php if (!empty($config['admin_avatar'])): ?>
+            <img src="uploads/<?php echo htmlspecialchars($config['admin_avatar']); ?>" alt="<?php echo htmlspecialchars($config['admin_nickname'] ?? 'Admin'); ?>" class="author-avatar">
+        <?php endif; ?>
+        <div class="author-info">
+            <span class="written-by">Written by</span>
+            <span class="author-name"><?php echo htmlspecialchars($config['admin_nickname'] ?? 'Admin'); ?></span>
+        </div>
+    </div>
+
     <section class="comments-section">
         <h3>Comments</h3>
         <?php

@@ -1,4 +1,4 @@
-<div class="sidebar">
+<div class="sidebar" style="background: #222;">
     <h2><?php echo htmlspecialchars($config['site_name']); ?></h2>
     <ul>
         <li><a href="index.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">Posts</a></li>

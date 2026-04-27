@@ -20,6 +20,7 @@ $defaults = [
     'front_page_template' => 'default',
     'single_post_sidebar' => 'yes',
     'featured_image_position' => 'top',
+    'custom_css' => '',
 ];
 
 $google_fonts = [
@@ -49,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'front_page_template' => $_POST['front_page_template'] ?? $defaults['front_page_template'],
             'single_post_sidebar' => $_POST['single_post_sidebar'] ?? $defaults['single_post_sidebar'],
             'featured_image_position' => $_POST['featured_image_position'] ?? $defaults['featured_image_position'],
+            'custom_css' => $_POST['custom_css'] ?? $defaults['custom_css'],
         ];
     }
 
@@ -183,6 +185,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="sidebar_width">Sidebar Width</label>
                     <input type="text" id="sidebar_width" name="sidebar_width" value="<?php echo htmlspecialchars($config['sidebar_width'] ?? '300px'); ?>">
+                </div>
+
+                <hr>
+                <h3>Custom CSS</h3>
+                <div class="form-group">
+                    <label for="custom_css">Additional CSS</label>
+                    <textarea id="custom_css" name="custom_css" style="width: 100%; height: 200px; font-family: monospace; padding: 10px; border: 1px solid #ccc; border-radius: 4px;"><?php echo htmlspecialchars($config['custom_css'] ?? ''); ?></textarea>
+                    <p style="font-size: 0.85rem; color: #666; margin-top: 10px;">
+                        <strong>Commonly used classes:</strong><br>
+                        <code>.post-title</code>, <code>.post-content</code>, <code>.site-header</code>, <code>.site-sidebar</code>, <code>.widget</code>, <code>.btn-primary</code>, <code>.site-footer</code>
+                    </p>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Save Changes</button>
