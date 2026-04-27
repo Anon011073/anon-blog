@@ -26,6 +26,6 @@ function logout() {
 
 function require_login() {
     if (!is_logged_in()) {
-        redirect('/admin/login.php');
+        redirect('login.php');
     }
 }

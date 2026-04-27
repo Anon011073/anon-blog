@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../app/auth.php';
 
 if (is_logged_in()) {
-    redirect('/admin/index.php');
+    redirect('index.php');
 }
 
 $error = '';
@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     if (login($username, $password)) {
-        redirect('/admin/index.php');
+        redirect('index.php');
     } else {
         $error = "Invalid username or password.";
     }

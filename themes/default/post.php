@@ -11,7 +11,7 @@ $img_pos = $config['featured_image_position'] ?? 'top';
     </header>
 
     <?php if (!empty($post['featured_image'])): ?>
-        <div class="post-featured-image <?php echo 'img-' . $img_pos; ?>">
+        <div class="post-featured-image img-top">
             <img src="uploads/<?php echo htmlspecialchars($post['featured_image']); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>">
         </div>
     <?php endif; ?>

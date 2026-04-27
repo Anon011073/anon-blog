@@ -12,4 +12,4 @@ if ($slug && verify_csrf_token($token)) {
     delete_page($slug);
 }
 
-redirect('/admin/pages.php');
+redirect('pages.php');

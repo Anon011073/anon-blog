@@ -34,17 +34,7 @@ $config = load_config();
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2><?php echo htmlspecialchars($config['site_name']); ?></h2>
-        <ul>
-            <li><a href="index.php" class="active">Posts</a></li>
-            <li><a href="media.php">Media</a></li>
-            <li><a href="comments.php">Comments</a></li>
-            <li><a href="settings.php">Settings</a></li><li><a href="theme_options.php">Theme Options</a></li>
-            <li><a href="/" target="_blank">View Site</a></li>
-            <li><a href="logout.php">Logout</a></li>
-        </ul>
-    </div>
+<?php include "sidebar.php"; ?>
     <div class="main-content">
         <div class="header">
             <h1>Posts</h1>

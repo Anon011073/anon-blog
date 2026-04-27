@@ -97,22 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2><?php echo htmlspecialchars($config['site_name']); ?></h2>
-        <ul>
-            <li><a href="index.php">Posts</a></li>
-            <li><a href="pages.php">Pages</a></li>
-            <li><a href="media.php">Media</a></li>
-            <li><a href="comments.php">Comments</a></li>
-            <li><a href="settings.php" class="active">Settings</a></li>
-            <li><a href="theme_options.php">Theme Options</a></li>
-            <li><a href="menu.php">Menu</a></li>
-            <li><a href="widgets.php">Widgets</a></li>
-            <li><a href="plugins.php">Plugins</a></li>
-            <li><a href="/" target="_blank">View Site</a></li>
-            <li><a href="logout.php">Logout</a></li>
-        </ul>
-    </div>
+<?php include "sidebar.php"; ?>
     <div class="main-content">
         <div class="header">
             <h1>General Settings</h1>

@@ -92,21 +92,7 @@ $images = glob(__DIR__ . '/../uploads/*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2><?php echo htmlspecialchars($config['site_name']); ?></h2>
-        <ul>
-            <li><a href="index.php" class="active">Posts</a></li>
-            <li><a href="pages.php">Pages</a></li>
-            <li><a href="media.php">Media</a></li>
-            <li><a href="comments.php">Comments</a></li>
-            <li><a href="settings.php">Settings</a></li><li><a href="theme_options.php">Theme Options</a></li>
-            <li><a href="menu.php">Menu</a></li>
-            <li><a href="widgets.php">Widgets</a></li>
-            <li><a href="plugins.php">Plugins</a></li>
-            <li><a href="/" target="_blank">View Site</a></li>
-            <li><a href="logout.php">Logout</a></li>
-        </ul>
-    </div>
+<?php include "sidebar.php"; ?>
     <div class="main-content">
         <h1><?php echo $post ? 'Edit Post' : 'Create New Post'; ?></h1>
 

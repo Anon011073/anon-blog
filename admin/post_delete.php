@@ -12,4 +12,4 @@ if ($slug && verify_csrf_token($token)) {
     delete_post($slug);
 }
 
-redirect('/admin/index.php');
+redirect('index.php');

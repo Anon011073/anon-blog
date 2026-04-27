@@ -1,4 +1,4 @@
 <?php
 require_once __DIR__ . '/../app/auth.php';
 logout();
-redirect('/admin/login.php');
+redirect('login.php');

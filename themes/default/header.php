@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($post) ? htmlspecialchars($post['title']) . ' - ' : (isset($page) ? htmlspecialchars($page['title']) . ' - ' : ''); ?><?php echo htmlspecialchars($config['site_name']); ?></title>
+
+    <?php
+    $body_font = $config['body_font'] ?? 'Inter';
+    $title_font = $config['title_font'] ?? 'Poppins';
+    $fonts_to_load = array_unique([$body_font, $title_font]);
+    $google_fonts_url = "https://fonts.googleapis.com/css2?family=" . implode('&family=', array_map(function($f) { return str_replace(' ', '+', $f) . ':wght@400;700'; }, $fonts_to_load)) . "&display=swap";
+    ?>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="<?php echo $google_fonts_url; ?>" rel="stylesheet">
+
     <link rel="stylesheet" href="themes/default/style.css">
     <?php
     $theme_assets = get_plugin_assets();
@@ -12,7 +23,11 @@
     <style>
         :root {
             --accent-color: <?php echo $config['primary_color'] ?? '#007bff'; ?>;
-            --font-family: <?php echo $config['theme_font'] ?? 'sans-serif'; ?>;
+            --body-font: '<?php echo $body_font; ?>', sans-serif;
+            --title-font: '<?php echo $title_font; ?>', sans-serif;
+            --body-font-size: <?php echo $config['body_font_size'] ?? '16px'; ?>;
+            --title-font-size: <?php echo $config['title_font_size'] ?? '32px'; ?>;
+            --widget-title-font-size: <?php echo $config['widget_title_font_size'] ?? '20px'; ?>;
             --container-width: <?php echo $config['container_width'] ?? '1100px'; ?>;
             --sidebar-width: <?php echo $config['sidebar_width'] ?? '300px'; ?>;
         }
@@ -30,8 +45,22 @@
 <?php
 $body_classes = [];
 if (($config['sidebar_position'] ?? 'right') === 'left') $body_classes[] = 'sidebar-left';
-if (($config['front_page_template'] ?? 'default') !== 'default' && !isset($post) && !isset($page)) $body_classes[] = 'no-sidebar';
-// For single post/page, we might also want no sidebar if configured, but request only mentioned front page templates
+
+$is_front_page = !isset($post) && !isset($page);
+$template = $config['front_page_template'] ?? 'default';
+
+if ($is_front_page) {
+    if ($template !== 'default') {
+        $body_classes[] = 'no-sidebar';
+    }
+} else {
+    // Single post/page
+    if ($template === 'single_column') {
+        $body_classes[] = 'no-sidebar';
+    } elseif (($config['single_post_sidebar'] ?? 'yes') === 'no') {
+        $body_classes[] = 'no-sidebar';
+    }
+}
 ?>
 <body class="<?php echo implode(' ', $body_classes); ?>">
     <header class="site-header">
