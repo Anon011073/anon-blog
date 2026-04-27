@@ -86,6 +86,16 @@ a:hover {
 
 .site-main {
     flex: 1;
+    min-width: 0;
+}
+
+pre {
+    max-width: 100%;
+    overflow-x: auto;
+    word-wrap: normal;
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 4px;
 }
 
 .site-sidebar {
