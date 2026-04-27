@@ -10,6 +10,7 @@
         <li><a href="menu.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'menu.php' ? 'active' : ''; ?>">Menu</a></li>
         <li><a href="widgets.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'widgets.php' ? 'active' : ''; ?>">Widgets</a></li>
         <li><a href="plugins.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'plugins.php' ? 'active' : ''; ?>">Plugins</a></li>
+        <li><a href="backup.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'backup.php' ? 'active' : ''; ?>">Backup / Restore</a></li>
         <li><a href="../index.php" target="_blank">View Site</a></li>
         <li><a href="logout.php">Logout</a></li>
     </ul>

@@ -37,6 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['reset'])) {
         $new_theme_config = $defaults;
+        // Preserve custom CSS on reset
+        $new_theme_config['custom_css'] = $config['custom_css'] ?? '';
     } else {
         $new_theme_config = [
             'body_font' => $_POST['body_font'] ?? $defaults['body_font'],
