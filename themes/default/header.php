@@ -77,7 +77,15 @@ if ($is_front_page) {
                         ?>
                             <li><a href="<?php echo htmlspecialchars($item['url']); ?>"><?php echo htmlspecialchars($item['label']); ?></a></li>
                         <?php endforeach; ?>
-                        <li>
+                        <?php if ($config['show_search_menu'] ?? false): ?>
+                        <li class="menu-search">
+                            <form action="index.php" method="GET">
+                                <input type="text" name="s" placeholder="Search..." required>
+                                <button type="submit" aria-label="Search">🔍</button>
+                            </form>
+                        </li>
+                        <?php endif; ?>
+                        <li class="theme-toggle-li">
                             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
                                 <span class="light-icon">☀️</span>
                                 <span class="dark-icon">🌙</span>

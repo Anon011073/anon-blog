@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $config_content .= "    'theme' => 'default',\n";
         $config_content .= "    'comments_enabled' => true,\n";
         $config_content .= "    'disqus_shortname' => '',\n";
+        $config_content .= "    'show_search_menu' => false,\n";
         $config_content .= "    'show_excerpts' => true,\n";
         $config_content .= "    'posts_per_page' => 5,\n";
         $config_content .= "    'sidebar_position' => 'right',\n";

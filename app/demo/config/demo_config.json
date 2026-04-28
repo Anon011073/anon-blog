@@ -1,9 +1,10 @@
 {
-    "site_name": "My Awesome Blog",
-    "admin_nickname": "Blogger",
+    "site_name": "Demo Test Blog",
+    "admin_nickname": "Admin User",
     "theme": "default",
     "comments_enabled": true,
     "disqus_shortname": "",
+    "show_search_menu": true,
     "show_excerpts": true,
     "posts_per_page": 5,
     "sidebar_position": "right",
@@ -12,10 +13,30 @@
         "recent_posts": true
     },
     "widget_areas": {
-        "sidebar": ["search", "recent_posts"],
+        "sidebar": [
+            "search",
+            "recent_posts"
+        ],
         "footer1": [],
         "footer2": [],
         "footer3": []
     },
-    "enabled_plugins": ["prism"]
+    "menu": [
+        {
+            "title": "Home",
+            "url": "index.php"
+        },
+        {
+            "title": "About",
+            "url": "index.php?page=about-us"
+        },
+        {
+            "title": "Contact",
+            "url": "index.php?page=contact"
+        }
+    ],
+    "enabled_plugins": [
+        "prism",
+        "contact"
+    ]
 }

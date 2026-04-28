@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $admin_nickname = $_POST['admin_nickname'] ?? $config['admin_nickname'] ?? 'Admin';
     $comments_enabled = isset($_POST['comments_enabled']);
     $disqus_shortname = sanitize($_POST['disqus_shortname'] ?? '');
+    $show_search_menu = isset($_POST['show_search_menu']);
     $show_excerpts = isset($_POST['show_excerpts']);
     $posts_per_page = (int)($_POST['posts_per_page'] ?? 5);
     $sidebar_position = $_POST['sidebar_position'] ?? 'right';
@@ -27,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'admin_nickname' => $admin_nickname,
         'comments_enabled' => $comments_enabled,
         'disqus_shortname' => $disqus_shortname,
+        'show_search_menu' => $show_search_menu,
         'show_excerpts' => $show_excerpts,
         'posts_per_page' => $posts_per_page,
         'sidebar_position' => $sidebar_position,
@@ -149,6 +151,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         <label for="disqus_shortname">Disqus Shortname</label>
                         <input type="text" id="disqus_shortname" name="disqus_shortname" value="<?php echo htmlspecialchars($config['disqus_shortname'] ?? ''); ?>" placeholder="e.g. my-blog-shortname">
                         <small style="color: #666;">If provided, Disqus will be used instead of the built-in comment system. Leave blank to use built-in comments.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="show_search_menu" <?php echo ($config['show_search_menu'] ?? false) ? 'checked' : ''; ?>> Show search icon in navigation menu
+                        </label>
                     </div>
 
                     <div class="form-group">
