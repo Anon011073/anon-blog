@@ -6,7 +6,18 @@
 require_once __DIR__ . '/functions.php';
 
 function is_logged_in() {
-    return isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
+    // Check for main admin
+    if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+        return true;
+    }
+    // Check for Author role via AnonUsers
+    if (isset($_SESSION['anon_user'])) {
+        $user = $_SESSION['anon_user'];
+        if (($user['role'] ?? '') === 'Author') {
+            return true;
+        }
+    }
+    return false;
 }
 
 function login($username, $password) {

@@ -8,6 +8,40 @@ $config = load_config();
 $error = '';
 $success = '';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['plugin_zip'])) {
+    if (!verify_csrf_token($_POST['csrf_token'])) {
+        die('CSRF token validation failed.');
+    }
+
+    $file = $_FILES['plugin_zip'];
+    if ($file['error'] === UPLOAD_ERR_OK) {
+        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        if ($ext === 'zip') {
+            $zip = new ZipArchive();
+            if ($zip->open($file['tmp_name']) === TRUE) {
+                // To keep it simple, we expect the zip to contain a folder with the plugin files
+                // Or we can extract it into its own folder based on zip name
+                $plugin_name = pathinfo($file['name'], PATHINFO_FILENAME);
+                $dest = __DIR__ . '/../plugins/' . $plugin_name;
+                if (!is_dir($dest)) {
+                    mkdir($dest, 0755, true);
+                    $zip->extractTo($dest);
+                    $success = "Plugin '$plugin_name' uploaded successfully!";
+                } else {
+                    $error = "A plugin with that name already exists.";
+                }
+                $zip->close();
+            } else {
+                $error = "Failed to open ZIP file.";
+            }
+        } else {
+            $error = "Please upload a valid ZIP file.";
+        }
+    } else {
+        $error = "Upload error: " . $file['error'];
+    }
+}
+
 if (isset($_GET['toggle']) && isset($_GET['token'])) {
     if (!verify_csrf_token($_GET['token'])) {
         die('CSRF token validation failed.');
@@ -68,6 +102,22 @@ $enabled_plugins = $config['enabled_plugins'] ?? [];
     <div class="main-content">
         <h1>Plugins</h1>
 
+        <?php if ($error): ?>
+            <div class="error" style="color: #d9534f; background: #f2dede; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem;"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
+        <?php if ($success): ?>
+            <div class="success" style="color: #5cb85c; background: #dff0d8; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem;"><?php echo htmlspecialchars($success); ?></div>
+        <?php endif; ?>
+
+        <div class="card">
+            <h3>Add New Plugin</h3>
+            <form method="POST" enctype="multipart/form-data" style="display: flex; gap: 10px; align-items: center;">
+                <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
+                <input type="file" name="plugin_zip" accept=".zip" required>
+                <button type="submit" class="btn btn-primary" style="background: #007bff; color: #fff;">Upload & Install</button>
+            </form>
+        </div>
+
         <div class="card">
             <?php if (empty($plugins)): ?>
                 <p>No plugins found.</p>
@@ -80,6 +130,9 @@ $enabled_plugins = $config['enabled_plugins'] ?? [];
                             <h3><?php echo htmlspecialchars($data['name'] ?? $name); ?></h3>
                             <p><?php echo htmlspecialchars($data['description'] ?? ''); ?></p>
                             <small>By <?php echo htmlspecialchars($data['author'] ?? 'Unknown'); ?></small>
+                            <?php if ($is_enabled && $name === 'anon-users'): ?>
+                                <br><a href="../plugins/anon-users/admin/manage.php" style="font-size: 0.8rem; color: #007bff;">Manage Users & News</a>
+                            <?php endif; ?>
                         </div>
                         <div class="plugin-actions">
                             <?php if ($is_enabled): ?>

@@ -47,8 +47,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             delete_post($slug);
         }
 
+        // Auto-approve logic for authors via AnonUsers Pro
+        $post_data['status'] = 'published';
+        if (isset($_SESSION['anon_user'])) {
+            $user = $_SESSION['anon_user'];
+            if (!($user['auto_approve_posts'] ?? false)) {
+                $post_data['status'] = 'pending';
+            }
+        }
+
         if (save_post($post_data)) {
-            $success = "Post saved successfully.";
+            $success = "Post saved successfully." . (isset($post_data['status']) && $post_data['status'] === 'pending' ? " (Awaiting Admin Approval)" : "");
             $post = $post_data;
             $slug = $new_slug;
         } else {

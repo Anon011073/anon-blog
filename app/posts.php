@@ -8,13 +8,16 @@ define('POSTS_DIR', __DIR__ . '/../content/posts/');
 /**
  * Get all posts
  */
-function get_posts() {
+function get_posts($include_pending = false) {
     $posts = [];
     $files = glob(POSTS_DIR . '*.json');
 
     foreach ($files as $file) {
         $post = json_decode(file_get_contents($file), true);
         if ($post) {
+            if (!$include_pending && isset($post['status']) && $post['status'] === 'pending') {
+                continue;
+            }
             $posts[] = $post;
         }
     }

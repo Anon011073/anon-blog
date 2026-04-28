@@ -7,7 +7,15 @@ require_once __DIR__ . '/app/functions.php';
 require_once __DIR__ . '/app/posts.php';
 require_once __DIR__ . '/app/theme.php';
 
+// Plugin initialization
 $config = load_config();
+$enabled_plugins = $config['enabled_plugins'] ?? [];
+foreach ($enabled_plugins as $plugin_name) {
+    $plugin_file = __DIR__ . '/plugins/' . $plugin_name . '/plugin.php';
+    if (file_exists($plugin_file)) {
+        include_once $plugin_file;
+    }
+}
 
 // If not installed, redirect to installer
 if (empty($config)) {
