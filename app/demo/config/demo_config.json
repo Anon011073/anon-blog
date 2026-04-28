@@ -3,6 +3,7 @@
     "admin_nickname": "Blogger",
     "theme": "default",
     "comments_enabled": true,
+    "disqus_shortname": "",
     "show_excerpts": true,
     "posts_per_page": 5,
     "sidebar_position": "right",
