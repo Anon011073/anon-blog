@@ -45,9 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['anon_action'])) {
         .btn-primary { background: #007bff; color: #fff; }
     </style>
 </head>
-<body>
-    <div class="main-content">
-        <h1>AnonUsers Pro Management</h1>
+<body style="display: flex; min-height: 100vh; margin: 0; font-family: sans-serif;">
+    <?php include __DIR__ . '/../../../admin/sidebar.php'; ?>
+    <div class="main-content" style="flex: 1; padding: 2rem; background: #f4f4f4;">
+        <h1>User Management</h1>
         <?php if ($success): ?><div style="background: #dff0d8; color: #3c763d; padding: 10px; margin-bottom: 20px;"><?php echo $success; ?></div><?php endif; ?>
 
         <div class="card">

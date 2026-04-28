@@ -3,7 +3,11 @@
  * User Roles & Management for AnonBlog
  */
 
-return [
+require_once __DIR__ . '/app/users.php';
+require_once __DIR__ . '/app/news.php';
+
+// Metadata for the plugin system
+$plugin_meta = [
     'name' => 'AnonUsers Pro',
     'description' => 'Adds User Registration, Roles (Author/Subscriber), Profiles, and Admin News.',
     'version' => '1.0.0-beta',
@@ -24,9 +28,6 @@ return [
         }
     ]
 ];
-
-require_once __DIR__ . '/app/users.php';
-require_once __DIR__ . '/app/news.php';
 
 // Handle Frontend Actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['anon_action'])) {
@@ -60,20 +61,28 @@ if (isset($_GET['logout'])) {
     unset($_SESSION['anon_user']);
 }
 
-function anon_render_registration() {
-    ob_start();
-    include __DIR__ . '/views/register.php';
-    return ob_get_clean();
+if (!function_exists('anon_render_registration')) {
+    function anon_render_registration() {
+        ob_start();
+        include __DIR__ . '/views/register.php';
+        return ob_get_clean();
+    }
 }
 
-function anon_render_login() {
-    ob_start();
-    include __DIR__ . '/views/login.php';
-    return ob_get_clean();
+if (!function_exists('anon_render_login')) {
+    function anon_render_login() {
+        ob_start();
+        include __DIR__ . '/views/login.php';
+        return ob_get_clean();
+    }
 }
 
-function anon_render_profile() {
-    ob_start();
-    include __DIR__ . '/views/profile.php';
-    return ob_get_clean();
+if (!function_exists('anon_render_profile')) {
+    function anon_render_profile() {
+        ob_start();
+        include __DIR__ . '/views/profile.php';
+        return ob_get_clean();
+    }
 }
+
+return $plugin_meta;

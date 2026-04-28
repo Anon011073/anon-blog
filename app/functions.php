@@ -77,6 +77,36 @@ function format_date($date_string) {
 }
 
 /**
+ * Global Plugin Cache
+ */
+$GLOBALS['plugin_cache'] = null;
+
+function get_enabled_plugins_data() {
+    if ($GLOBALS['plugin_cache'] !== null) {
+        return $GLOBALS['plugin_cache'];
+    }
+
+    $config = load_config();
+    $enabled_names = $config['enabled_plugins'] ?? [];
+    $plugins_data = [];
+
+    foreach ($enabled_names as $name) {
+        $file = __DIR__ . '/../plugins/' . $name . '/plugin.php';
+        if (file_exists($file)) {
+            // We use include here because we want the return value.
+            // We only call this once per request.
+            $data = include $file;
+            if (is_array($data)) {
+                $plugins_data[$name] = $data;
+            }
+        }
+    }
+
+    $GLOBALS['plugin_cache'] = $plugins_data;
+    return $plugins_data;
+}
+
+/**
  * Import Demo Content
  */
 function import_demo_content() {

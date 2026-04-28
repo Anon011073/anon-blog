@@ -33,10 +33,15 @@
         {
             "label": "Contact",
             "url": "index.php?page=contact"
+        },
+        {
+            "label": "Member Area",
+            "url": "index.php?page=member-area"
         }
     ],
     "enabled_plugins": [
         "prism",
-        "contact"
+        "contact",
+        "anon-users"
     ]
 }

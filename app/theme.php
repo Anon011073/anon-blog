@@ -31,15 +31,10 @@ function render_theme($template, $data = []) {
  * Basic Markdown to HTML converter (Simplified)
  */
 function markdown_to_html($content) {
-    $config = load_config();
-    $enabled_plugins = $config['enabled_plugins'] ?? [];
-    $plugins = glob(__DIR__ . '/../plugins/*/plugin.php');
+    $plugins_data = get_enabled_plugins_data();
 
     // 1. Pre-process markdown (hooks that act on raw markdown)
-    foreach ($plugins as $plugin) {
-        $plugin_name = basename(dirname($plugin));
-        if (!in_array($plugin_name, $enabled_plugins)) continue;
-        $plugin_data = include $plugin;
+    foreach ($plugins_data as $plugin_data) {
         if (isset($plugin_data['hooks']['markdown_pre'])) {
             $content = $plugin_data['hooks']['markdown_pre']($content);
         }
@@ -66,10 +61,7 @@ function markdown_to_html($content) {
     }
 
     // 3. Post-process (hooks for shortcodes, prism, etc)
-    foreach ($plugins as $plugin) {
-        $plugin_name = basename(dirname($plugin));
-        if (!in_array($plugin_name, $enabled_plugins)) continue;
-        $plugin_data = include $plugin;
+    foreach ($plugins_data as $plugin_data) {
         if (isset($plugin_data['hooks']['render_content'])) {
             $content = $plugin_data['hooks']['render_content']($content);
         }
@@ -83,19 +75,14 @@ function markdown_to_html($content) {
  */
 function get_plugin_assets() {
     $assets = ['css' => [], 'js' => []];
-    $config = load_config();
-    $enabled_plugins = $config['enabled_plugins'] ?? [];
+    $plugins_data = get_enabled_plugins_data();
 
-    foreach ($enabled_plugins as $plugin_name) {
-        $plugin_file = __DIR__ . '/../plugins/' . $plugin_name . '/plugin.php';
-        if (file_exists($plugin_file)) {
-            $plugin_data = include $plugin_file;
-            if (isset($plugin_data['assets']['css'])) {
-                foreach ($plugin_data['assets']['css'] as $css) $assets['css'][] = $css;
-            }
-            if (isset($plugin_data['assets']['js'])) {
-                foreach ($plugin_data['assets']['js'] as $js) $assets['js'][] = $js;
-            }
+    foreach ($plugins_data as $plugin_data) {
+        if (isset($plugin_data['assets']['css'])) {
+            foreach ($plugin_data['assets']['css'] as $css) $assets['css'][] = $css;
+        }
+        if (isset($plugin_data['assets']['js'])) {
+            foreach ($plugin_data['assets']['js'] as $js) $assets['js'][] = $js;
         }
     }
     return $assets;

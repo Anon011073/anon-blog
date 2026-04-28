@@ -9,13 +9,7 @@ require_once __DIR__ . '/app/theme.php';
 
 // Plugin initialization
 $config = load_config();
-$enabled_plugins = $config['enabled_plugins'] ?? [];
-foreach ($enabled_plugins as $plugin_name) {
-    $plugin_file = __DIR__ . '/plugins/' . $plugin_name . '/plugin.php';
-    if (file_exists($plugin_file)) {
-        include_once $plugin_file;
-    }
-}
+get_enabled_plugins_data(); // This will load all plugin files and cache them
 
 // If not installed, redirect to installer
 if (empty($config)) {

@@ -1,0 +1,6 @@
+{
+    "title": "Member Area",
+    "slug": "member-area",
+    "content": "<div class=\"member-area-wrapper\"><h2>User Area<\/h2><p>Login or register to access your profile and join our community!<\/p><div style=\"display:grid; grid-template-columns: 1fr 1fr; gap: 40px;\"><div><h3>Login<\/h3>[login]<\/div><div><h3>Register<\/h3>[register]<\/div><\/div><hr><h3>Your Profile<\/h3>[profile]<\/div>",
+    "date": "2026-04-28"
+}
