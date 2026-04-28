@@ -74,8 +74,9 @@ if ($is_front_page) {
                         <?php
                         $menu = $config['menu'] ?? [['label' => 'Home', 'url' => 'index.php']];
                         foreach ($menu as $item):
+                            $label = $item['label'] ?? $item['title'] ?? 'Link';
                         ?>
-                            <li><a href="<?php echo htmlspecialchars($item['url']); ?>"><?php echo htmlspecialchars($item['label']); ?></a></li>
+                            <li><a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>"><?php echo htmlspecialchars($label); ?></a></li>
                         <?php endforeach; ?>
                         <?php if ($config['show_search_menu'] ?? false): ?>
                         <li class="menu-search">

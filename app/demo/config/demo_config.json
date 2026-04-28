@@ -23,15 +23,15 @@
     },
     "menu": [
         {
-            "title": "Home",
+            "label": "Home",
             "url": "index.php"
         },
         {
-            "title": "About",
+            "label": "About",
             "url": "index.php?page=about-us"
         },
         {
-            "title": "Contact",
+            "label": "Contact",
             "url": "index.php?page=contact"
         }
     ],
