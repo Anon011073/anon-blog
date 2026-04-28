@@ -136,6 +136,9 @@ function import_demo_content() {
         }
     }
 
+    // Delete existing news
+    if (file_exists(__DIR__ . "/../content/news.json")) unlink(__DIR__ . "/../content/news.json");
+
     // Update Config (Merge demo settings but keep credentials)
     $current_config = load_config();
     $demo_config_json = file_get_contents("$demo_dir/config/demo_config.json");

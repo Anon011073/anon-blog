@@ -34,20 +34,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['anon_action'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AnonUsers Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - AnonBlog Admin</title>
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; margin: 0; display: flex; }
-        .main-content { padding: 2rem; flex: 1; }
-        .card { background: #fff; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        body { font-family: sans-serif; margin: 0; display: flex; min-height: 100vh; background: #f4f4f4; }
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+        .card h2 { margin-top: 0; font-size: 1.2rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; }
         table th, table td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
-        .btn { padding: 5px 10px; border-radius: 4px; border: none; cursor: pointer; }
+        .btn { padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; cursor: pointer; border: none; font-size: 0.9rem; }
         .btn-primary { background: #007bff; color: #fff; }
+        .success { background: #dff0d8; color: #3c763d; padding: 10px; margin-bottom: 20px; border-radius: 4px; }
+        input[type="text"], textarea, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
     </style>
 </head>
-<body style="display: flex; min-height: 100vh; margin: 0; font-family: sans-serif;">
+<body>
     <?php include __DIR__ . '/../../../admin/sidebar.php'; ?>
-    <div class="main-content" style="flex: 1; padding: 2rem; background: #f4f4f4;">
+    <div class="main-content">
         <h1>User Management</h1>
         <?php if ($success): ?><div style="background: #dff0d8; color: #3c763d; padding: 10px; margin-bottom: 20px;"><?php echo $success; ?></div><?php endif; ?>
 
@@ -60,10 +64,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['anon_action'])) {
                     <input type="text" name="title" placeholder="News Title" required style="width: 100%; padding: 8px;">
                 </div>
                 <div style="margin-bottom: 10px;">
-                    <textarea name="content" placeholder="Content for users..." required style="width: 100%; height: 100px; padding: 8px;"></textarea>
+                    <textarea name="content" placeholder="Content for users..." required style="width: 100%; height: 60px; padding: 8px;"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Publish News</button>
             </form>
+
+            <h3 style="margin-top: 20px;">Current & Previous News</h3>
+            <div style="max-height: 300px; overflow-y: auto;">
+                <?php
+                $all_news = get_admin_news();
+                if (empty($all_news)): ?>
+                    <p>No news posted yet.</p>
+                <?php else:
+                    foreach ($all_news as $item): ?>
+                    <div style="border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <strong><?php echo htmlspecialchars($item['title']); ?></strong>
+                            <span style="font-size: 0.8rem; color: #888;">(<?php echo $item['date']; ?>)</span>
+                            <p style="margin: 5px 0; font-size: 0.9rem;"><?php echo nl2br(htmlspecialchars($item['content'])); ?></p>
+                        </div>
+                    </div>
+                <?php endforeach; endif; ?>
+            </div>
         </div>
 
         <div class="card">
@@ -74,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['anon_action'])) {
                         <th>Username</th>
                         <th>Nickname</th>
                         <th>Role</th>
+                        <th>Permissions</th>
                         <th>Options</th>
                         <th>Actions</th>
                     </tr>
@@ -92,6 +115,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['anon_action'])) {
                                     <option value="Subscriber" <?php echo ($u['role'] ?? '') === 'Subscriber' ? 'selected' : ''; ?>>Subscriber</option>
                                     <option value="Author" <?php echo ($u['role'] ?? '') === 'Author' ? 'selected' : ''; ?>>Author</option>
                                 </select>
+                            </td>
+                            <td>
+                                <?php $perms = $u['permissions'] ?? []; ?>
+                                <div style="font-size: 0.8rem;">
+                                    <label><input type="checkbox" name="permissions[]" value="dashboard" <?php echo in_array('dashboard', $perms) ? 'checked' : ''; ?>> Dash</label>
+                                    <label><input type="checkbox" name="permissions[]" value="pages" <?php echo in_array('pages', $perms) ? 'checked' : ''; ?>> Pages</label><br>
+                                    <label><input type="checkbox" name="permissions[]" value="media" <?php echo in_array('media', $perms) ? 'checked' : ''; ?>> Media</label>
+                                    <label><input type="checkbox" name="permissions[]" value="comments" <?php echo in_array('comments', $perms) ? 'checked' : ''; ?>> Comm</label>
+                                </div>
                             </td>
                             <td>
                                 <label><input type="checkbox" name="auto_approve_posts" <?php echo ($u['auto_approve_posts'] ?? false) ? 'checked' : ''; ?>> Auto-Post</label><br>

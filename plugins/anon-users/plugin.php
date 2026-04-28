@@ -22,7 +22,12 @@ $plugin_meta = [
                 $content = str_replace('[login]', anon_render_login(), $content);
             }
             if (strpos($content, '[profile]') !== false) {
-                $content = str_replace('[profile]', anon_render_profile(), $content);
+                // If not logged in, show login form on profile page
+                if (!isset($_SESSION['anon_user'])) {
+                    $content = str_replace('[profile]', '<h3>Please log in to view your profile.</h3>' . anon_render_login(), $content);
+                } else {
+                    $content = str_replace('[profile]', anon_render_profile(), $content);
+                }
             }
             return $content;
         }

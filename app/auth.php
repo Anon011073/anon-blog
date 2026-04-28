@@ -35,8 +35,29 @@ function logout() {
     session_destroy();
 }
 
-function require_login() {
+function has_permission($section) {
+    if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+        return true;
+    }
+    if (isset($_SESSION['anon_user'])) {
+        $user = $_SESSION['anon_user'];
+        if (($user['role'] ?? '') === 'Author') {
+            // Authors always have access to posts
+            if ($section === 'posts') return true;
+
+            $perms = $user['permissions'] ?? [];
+            return in_array($section, $perms);
+        }
+    }
+    return false;
+}
+
+function require_login($section = null) {
     if (!is_logged_in()) {
         redirect('login.php');
+    }
+
+    if ($section && !has_permission($section)) {
+        die('Access Denied: You do not have permission to access this section.');
     }
 }

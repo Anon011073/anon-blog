@@ -35,8 +35,8 @@
             "url": "index.php?page=contact"
         },
         {
-            "label": "Member Area",
-            "url": "index.php?page=member-area"
+            "label": "My Profile",
+            "url": "index.php?page=profile"
         }
     ],
     "enabled_plugins": [

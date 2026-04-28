@@ -3,7 +3,7 @@ require_once __DIR__ . '/../app/auth.php';
 require_once __DIR__ . '/../app/posts.php';
 require_once __DIR__ . '/../app/functions.php';
 
-require_login();
+require_login('posts');
 
 $posts = get_posts(true); // Include pending for admin
 $config = load_config();

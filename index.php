@@ -23,6 +23,12 @@ if (empty($config)) {
 
 $post_slug = $_GET['post'] ?? '';
 $page_slug = $_GET['page'] ?? '';
+
+// Handle special plugin pages
+if ($page_slug === 'register') {
+    render_theme('page', ['page' => ['title' => 'Register Account', 'content' => '[register]'], 'config' => $config]);
+    exit;
+}
 $search_query = $_GET['s'] ?? '';
 $p = (int)($_GET['p'] ?? 1);
 

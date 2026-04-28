@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../app/auth.php';
 require_once __DIR__ . '/../app/functions.php';
 
-require_login();
+require_login('media');
 
 $config = load_config();
 $uploads_dir = __DIR__ . '/../uploads/';

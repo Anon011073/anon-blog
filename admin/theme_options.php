@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../app/auth.php';
 require_once __DIR__ . '/../app/functions.php';
 
-require_login();
+require_login('theme_options');
 
 $config = load_config();
 $error = '';
