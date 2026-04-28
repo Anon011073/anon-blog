@@ -1,0 +1,20 @@
+{
+    "site_name": "My Awesome Blog",
+    "admin_nickname": "Blogger",
+    "theme": "default",
+    "comments_enabled": true,
+    "show_excerpts": true,
+    "posts_per_page": 5,
+    "sidebar_position": "right",
+    "widgets": {
+        "search": true,
+        "recent_posts": true
+    },
+    "widget_areas": {
+        "sidebar": ["search", "recent_posts"],
+        "footer1": [],
+        "footer2": [],
+        "footer3": []
+    },
+    "enabled_plugins": ["prism"]
+}

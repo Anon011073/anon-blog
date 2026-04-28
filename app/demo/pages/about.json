@@ -1,0 +1,6 @@
+{
+    "title": "About This CMS",
+    "slug": "about-this-cms",
+    "content": "<h2>About Us</h2><p>This is a static page example. You can use pages for content that doesn't change often, like an 'About' or 'Contact' page.</p><p>Everything you see here is stored in simple JSON files. You can back up your entire site just by copying the <code>content/</code> folder!</p>",
+    "date": "2024-05-20"
+}

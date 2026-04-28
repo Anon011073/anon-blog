@@ -64,6 +64,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+// Handle Demo Content Import
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'import_demo') {
+    if (!verify_csrf_token($_POST['csrf_token'])) {
+        die('CSRF token validation failed.');
+    }
+
+    if (import_demo_content()) {
+        $success = "Demo content imported successfully! You might need to refresh to see the changes.";
+        $config = load_config();
+    } else {
+        $error = "Failed to import demo content.";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -182,6 +196,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
         </form>
+
+        <div class="card" style="border-top: 4px solid #ffc107;">
+            <div class="section-header" style="background: #fff3cd;">
+                <span><strong>✨ Demo Content</strong></span>
+            </div>
+            <div class="section-content">
+                <p>New to the CMS? You can import demo content (posts, pages, and sample settings) to see how everything looks.</p>
+                <div class="warning" style="background: #fff3cd; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #ffeeba;">
+                    <strong>Note:</strong> This will NOT delete your existing content, but it will overwrite site settings with demo defaults.
+                </div>
+                <form method="POST" onsubmit="return confirm('Import demo content? This will update your site settings.')">
+                    <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
+                    <input type="hidden" name="action" value="import_demo">
+                    <button type="submit" class="btn" style="background: #ffc107; color: #000;">Import Demo Content</button>
+                </form>
+            </div>
+        </div>
     </div>
 
 </body>

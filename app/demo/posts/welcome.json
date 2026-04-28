@@ -1,0 +1,10 @@
+{
+    "title": "Welcome to your new Blog!",
+    "slug": "welcome-to-your-new-blog",
+    "content": "<h2>Hello World!</h2><p>This is your first post. You can edit or delete it from the admin panel.</p><p>This CMS is designed to be lightweight, fast, and easy to use. It uses flat files (JSON) for storage, meaning no database setup is required!</p><h3>Features:</h3><ul><li>Markdown & HTML support</li><li>Responsive Default Theme</li><li>Light/Dark mode</li><li>Customizable Sidebar & Widgets</li><li>Simple Media Manager</li></ul>",
+    "excerpt": "Welcome to your new lightweight blogging CMS! This is a demo post to show you how things look.",
+    "featured_image": "demo_image.jpg",
+    "date": "2024-05-20",
+    "author": "Admin",
+    "comments_enabled": true
+}
