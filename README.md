@@ -1,4 +1,4 @@
-# AnonBlog CMS
+# AnonBlog CMS v1.0.0-beta
 
 AnonBlog is a lightweight, fast, and secure flat-file blogging CMS built with vanilla PHP. No database, no heavy frameworks—just pure performance and simplicity.
 
@@ -29,6 +29,16 @@ AnonBlog is a lightweight, fast, and secure flat-file blogging CMS built with va
 2. Navigate to your site URL (e.g., `http://localhost/install.php`).
 3. Follow the on-screen instructions to set your site name and admin credentials.
 4. Delete `install.php` after completion.
+
+## 🏷️ How to create a Release on GitHub
+
+To make this a downloadable package for others:
+1. Go to your GitHub repository.
+2. Click on **"Releases"** in the right sidebar.
+3. Click **"Draft a new release"**.
+4. Set the tag to `v1.0.0-beta`.
+5. Title it `AnonBlog v1.0.0-beta (Initial Release)`.
+6. GitHub will automatically create a `.zip` and `.tar.gz` of your code for users to download.
 
 ## 🔮 Planned Features (Premium & Core)
 

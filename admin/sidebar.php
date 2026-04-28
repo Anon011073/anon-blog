@@ -14,4 +14,7 @@
         <li><a href="../index.php" target="_blank">View Site</a></li>
         <li><a href="logout.php">Logout</a></li>
     </ul>
+    <div style="padding: 10px; font-size: 0.8rem; color: #666; border-top: 1px solid #333; margin-top: 20px;">
+        Version: <?php echo ANONBLOG_VERSION; ?>
+    </div>
 </div>
