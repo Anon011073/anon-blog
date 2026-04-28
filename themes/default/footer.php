@@ -29,7 +29,7 @@
             <?php endif; ?>
             <div class="footer-bottom">
                 <a href="#" id="back-to-top">Back to top ↑</a><br>
-                &copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($config['site_name']); ?>. Built with Jules CMS.
+                &copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($config['site_name']); ?>.
             </div>
         </div>
     </footer>
