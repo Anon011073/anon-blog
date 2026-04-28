@@ -12,7 +12,7 @@ $img_pos = $config['featured_image_position'] ?? 'top';
 
     <?php if (!empty($post['featured_image'])): ?>
         <div class="post-featured-image img-top">
-            <img src="uploads/<?php echo htmlspecialchars($post['featured_image']); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>">
+            <img src="uploads/<?php echo htmlspecialchars($post['featured_image']); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>" loading="lazy">
         </div>
     <?php endif; ?>
 

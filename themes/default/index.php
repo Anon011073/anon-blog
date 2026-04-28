@@ -21,7 +21,7 @@
                 <?php if (!empty($post['featured_image'])): ?>
                     <div class="post-thumbnail">
                         <a href="index.php?post=<?php echo $post['slug']; ?>">
-                            <img src="uploads/<?php echo htmlspecialchars($post['featured_image']); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>">
+                    <img src="uploads/<?php echo htmlspecialchars($post['featured_image']); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>" loading="lazy">
                         </a>
                     </div>
                 <?php endif; ?>
