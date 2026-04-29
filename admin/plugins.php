@@ -137,7 +137,7 @@ $enabled_plugins = $config['enabled_plugins'] ?? [];
         .sidebar ul li { margin-bottom: 1rem; }
         .sidebar ul li a { color: #ccc; text-decoration: none; display: block; padding: 0.5rem; border-radius: 4px; }
         .sidebar ul li a:hover, .sidebar ul li a.active { background: #444; color: #fff; }
-        .main-content { flex: 1; padding: 2rem; margin-left: 250px; margin-top: 50px; }
+        .main-content { flex: 1; padding: 2rem; margin-left: 280px; margin-top: 50px; }
         .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1rem; }
         .btn { padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; cursor: pointer; border: none; font-size: 0.9rem; }
         .btn-success { background: #28a745; color: #fff; }
