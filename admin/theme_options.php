@@ -22,6 +22,21 @@ $google_fonts = [
     'Josefin Sans', 'Archivo'
 ];
 
+$defaults = [
+    'body_font' => 'Inter',
+    'title_font' => 'Poppins',
+    'body_font_size' => '16px',
+    'title_font_size' => '32px',
+    'widget_title_font_size' => '20px',
+    'primary_color' => '#007bff',
+    'container_width' => '1100px',
+    'sidebar_width' => '300px',
+    'front_page_template' => 'default',
+    'single_post_sidebar' => 'yes',
+    'featured_image_position' => 'top',
+    'custom_css' => '',
+];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token($_POST['csrf_token'])) {
         die('CSRF token validation failed.');
@@ -29,27 +44,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['reset'])) {
         if ($is_custom_theme) {
-            $defaults = [];
+            $reset_options = [];
             foreach ($theme_meta['options'] as $opt) {
-                $defaults[$opt['name']] = $opt['default'] ?? '';
+                $reset_options[$opt['name']] = $opt['default'] ?? '';
             }
-            update_config(['theme_options' => $defaults]);
+            update_config(['theme_options' => $reset_options]);
         } else {
-            $defaults = [
-                'primary_color' => '#007bff',
-                'body_font' => 'Inter',
-                'title_font' => 'Poppins',
-                'body_font_size' => '16px',
-                'title_font_size' => '32px',
-                'widget_title_font_size' => '20px',
-                'container_width' => '1100px',
-                'sidebar_width' => '300px',
-                'front_page_template' => 'default',
-                'single_post_sidebar' => 'yes',
-                'featured_image_position' => 'top',
-                'custom_css' => $config['custom_css'] ?? ''
-            ];
-            update_config($defaults);
+            $reset_config = $defaults;
+            // Preserve custom CSS on reset
+            $reset_config['custom_css'] = $config['custom_css'] ?? '';
+            update_config($reset_config);
         }
         $success = "Options reset to defaults.";
     } else {
@@ -65,18 +69,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             update_config(['theme_options' => $new_options]);
         } else {
             $new_config = [
-                'body_font' => $_POST['body_font'] ?? 'Inter',
-                'title_font' => $_POST['title_font'] ?? 'Poppins',
-                'body_font_size' => $_POST['body_font_size'] ?? '16px',
-                'title_font_size' => $_POST['title_font_size'] ?? '32px',
-                'widget_title_font_size' => $_POST['widget_title_font_size'] ?? '20px',
-                'primary_color' => $_POST['primary_color'] ?? '#007bff',
-                'container_width' => $_POST['container_width'] ?? '1100px',
-                'sidebar_width' => $_POST['sidebar_width'] ?? '300px',
-                'front_page_template' => $_POST['front_page_template'] ?? 'default',
-                'single_post_sidebar' => $_POST['single_post_sidebar'] ?? 'yes',
-                'featured_image_position' => $_POST['featured_image_position'] ?? 'top',
-                'custom_css' => $_POST['custom_css'] ?? '',
+                'body_font' => $_POST['body_font'] ?? $defaults['body_font'],
+                'title_font' => $_POST['title_font'] ?? $defaults['title_font'],
+                'body_font_size' => $_POST['body_font_size'] ?? $defaults['body_font_size'],
+                'title_font_size' => $_POST['title_font_size'] ?? $defaults['title_font_size'],
+                'widget_title_font_size' => $_POST['widget_title_font_size'] ?? $defaults['widget_title_font_size'],
+                'primary_color' => $_POST['primary_color'] ?? $defaults['primary_color'],
+                'container_width' => $_POST['container_width'] ?? $defaults['container_width'],
+                'sidebar_width' => $_POST['sidebar_width'] ?? $defaults['sidebar_width'],
+                'front_page_template' => $_POST['front_page_template'] ?? $defaults['front_page_template'],
+                'single_post_sidebar' => $_POST['single_post_sidebar'] ?? $defaults['single_post_sidebar'],
+                'featured_image_position' => $_POST['featured_image_position'] ?? $defaults['featured_image_position'],
+                'custom_css' => $_POST['custom_css'] ?? $defaults['custom_css'],
             ];
             update_config($new_config);
         }
@@ -93,8 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Theme Options - AnonBlog Admin</title>
     <style>
         body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; background: #f4f4f4; }
-        .main-container { display: flex; flex: 1; }
-        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+        .main-content { flex: 1; padding: 2rem; margin-left: 250px; margin-top: 50px; overflow-y: auto; }
         .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 2rem; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
@@ -124,6 +127,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label><?php echo $opt['label']; ?></label>
                             <?php if ($opt['type'] === 'text'): ?>
                                 <input type="text" name="<?php echo $opt['name']; ?>" value="<?php echo htmlspecialchars($val); ?>">
+                            <?php elseif ($opt['type'] === 'font'): ?>
+                                <select name="<?php echo $opt['name']; ?>">
+                                    <?php foreach ($google_fonts as $font): ?>
+                                        <option value="<?php echo $font; ?>" <?php echo $val === $font ? 'selected' : ''; ?>><?php echo $font; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             <?php elseif ($opt['type'] === 'color'): ?>
                                 <input type="color" name="<?php echo $opt['name']; ?>" value="<?php echo htmlspecialchars($val); ?>">
                             <?php elseif ($opt['type'] === 'checkbox'): ?>
@@ -138,23 +147,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <!-- Default Theme Options (Visible only for 'default' theme) -->
+                    <!-- Default Theme Options -->
                     <h3>Layout Settings</h3>
                     <div class="form-group">
-                        <label>Front Page Template</label>
-                        <select name="front_page_template">
-                            <option value="default" <?php echo ($config['front_page_template'] ?? '') === 'default' ? 'selected' : ''; ?>>Default</option>
-                            <option value="grid" <?php echo ($config['front_page_template'] ?? '') === 'grid' ? 'selected' : ''; ?>>Grid</option>
-                            <option value="single_column" <?php echo ($config['front_page_template'] ?? '') === 'single_column' ? 'selected' : ''; ?>>Single Column</option>
+                        <label for="front_page_template">Front Page Template</label>
+                        <select id="front_page_template" name="front_page_template">
+                            <option value="default" <?php echo ($config['front_page_template'] ?? '') === 'default' ? 'selected' : ''; ?>>Default (List + Sidebar)</option>
+                            <option value="grid" <?php echo ($config['front_page_template'] ?? '') === 'grid' ? 'selected' : ''; ?>>Grid (2-3 Columns, No Sidebar)</option>
+                            <option value="single_column" <?php echo ($config['front_page_template'] ?? '') === 'single_column' ? 'selected' : ''; ?>>Single Column (No Sidebar)</option>
                         </select>
                     </div>
+
                     <div class="form-group">
-                        <label>Accent Color</label>
-                        <input type="color" name="primary_color" value="<?php echo $config['primary_color'] ?? '#007bff'; ?>">
+                        <label for="single_post_sidebar">Show Sidebar on Single Post Page</label>
+                        <select id="single_post_sidebar" name="single_post_sidebar">
+                            <option value="yes" <?php echo ($config['single_post_sidebar'] ?? 'yes') === 'yes' ? 'selected' : ''; ?>>Yes</option>
+                            <option value="no" <?php echo ($config['single_post_sidebar'] ?? 'yes') === 'no' ? 'selected' : ''; ?>>No</option>
+                        </select>
                     </div>
+
                     <div class="form-group">
-                        <label>Additional CSS</label>
-                        <textarea name="custom_css" style="height: 150px; font-family: monospace;"><?php echo htmlspecialchars($config['custom_css'] ?? ''); ?></textarea>
+                        <label for="featured_image_position">Featured Image Position (List & Single Post)</label>
+                        <select id="featured_image_position" name="featured_image_position">
+                            <option value="top" <?php echo ($config['featured_image_position'] ?? '') === 'top' ? 'selected' : ''; ?>>Above Title (Full Width)</option>
+                            <option value="left" <?php echo ($config['featured_image_position'] ?? '') === 'left' ? 'selected' : ''; ?>>Left of Content (Thumbnail)</option>
+                        </select>
+                    </div>
+
+                    <hr>
+                    <h3>Typography Settings</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="title_font">Title Font</label>
+                            <select id="title_font" name="title_font">
+                                <?php foreach ($google_fonts as $font): ?>
+                                    <option value="<?php echo $font; ?>" <?php echo ($config['title_font'] ?? $defaults['title_font']) === $font ? 'selected' : ''; ?>><?php echo $font; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="body_font">Body Font</label>
+                            <select id="body_font" name="body_font">
+                                <?php foreach ($google_fonts as $font): ?>
+                                    <option value="<?php echo $font; ?>" <?php echo ($config['body_font'] ?? $defaults['body_font']) === $font ? 'selected' : ''; ?>><?php echo $font; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="title_font_size">Title Font Size</label>
+                            <input type="text" id="title_font_size" name="title_font_size" value="<?php echo htmlspecialchars($config['title_font_size'] ?? $defaults['title_font_size']); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="body_font_size">Body Font Size</label>
+                            <input type="text" id="body_font_size" name="body_font_size" value="<?php echo htmlspecialchars($config['body_font_size'] ?? $defaults['body_font_size']); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="widget_title_font_size">Widget Title Size</label>
+                            <input type="text" id="widget_title_font_size" name="widget_title_font_size" value="<?php echo htmlspecialchars($config['widget_title_font_size'] ?? $defaults['widget_title_font_size']); ?>">
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h3>Style Settings</h3>
+                    <div class="form-group">
+                        <label for="primary_color">Primary Accent Color</label>
+                        <input type="color" id="primary_color" name="primary_color" value="<?php echo htmlspecialchars($config['primary_color'] ?? '#007bff'); ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="container_width">Container Max-Width</label>
+                        <input type="text" id="container_width" name="container_width" value="<?php echo htmlspecialchars($config['container_width'] ?? '1100px'); ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sidebar_width">Sidebar Width</label>
+                        <input type="text" id="sidebar_width" name="sidebar_width" value="<?php echo htmlspecialchars($config['sidebar_width'] ?? '300px'); ?>">
+                    </div>
+
+                    <hr>
+                    <h3>Custom CSS</h3>
+                    <div class="form-group">
+                        <label for="custom_css">Additional CSS</label>
+                        <textarea id="custom_css" name="custom_css" style="height: 150px; font-family: monospace;"><?php echo htmlspecialchars($config['custom_css'] ?? ''); ?></textarea>
                     </div>
                 <?php endif; ?>
 

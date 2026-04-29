@@ -11,8 +11,8 @@ return [
     'options' => [
         [
             'name' => 'heading_font',
-            'label' => 'Heading Font (Google Font)',
-            'type' => 'text',
+            'label' => 'Heading Font',
+            'type' => 'font',
             'default' => 'Montserrat'
         ],
         [

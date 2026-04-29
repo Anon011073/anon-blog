@@ -10,7 +10,7 @@ if (isset($_SESSION['anon_user'])) {
 }
 $is_admin = isset($_SESSION['admin_logged_in']);
 ?>
-<div style="height: 50px; background: #000; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 1000; font-family: sans-serif;">
+<div style="height: 50px; background: #000; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; font-family: sans-serif;">
     <div style="font-weight: bold;"><?php echo htmlspecialchars($config['site_name'] ?? 'AnonBlog'); ?> Admin</div>
     <div style="display: flex; gap: 20px; font-size: 0.9rem;">
         <a href="<?php echo $admin_base; ?>../index.php" target="_blank" style="color: #fff; text-decoration: none;">🌐 View Site</a>
@@ -19,7 +19,7 @@ $is_admin = isset($_SESSION['admin_logged_in']);
         <a href="<?php echo $admin_base; ?>logout.php" style="color: #fff; text-decoration: none;">🚪 Logout</a>
     </div>
 </div>
-<div class="sidebar" style="background: #222; width: 250px; flex-shrink: 0; color: #fff; padding: 1rem; min-height: calc(100vh - 50px);">
+<div class="sidebar" style="background: #222; width: 250px; flex-shrink: 0; color: #fff; padding: 1rem; position: fixed; top: 50px; left: 0; bottom: 0; z-index: 999; overflow-y: auto;">
     <ul style="list-style: none; padding: 0;">
         <?php if (has_permission('dashboard')): ?>
             <li style="margin-bottom: 5px;"><a href="<?php echo $admin_base; ?>index.php" style="color: #ccc; text-decoration: none; display: block; padding: 10px; border-radius: 4px;" class="<?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">Dashboard</a></li>

@@ -19,18 +19,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['plugin_zip'])) {
         if ($ext === 'zip') {
             $zip = new ZipArchive();
             if ($zip->open($file['tmp_name']) === TRUE) {
-                // To keep it simple, we expect the zip to contain a folder with the plugin files
-                // Or we can extract it into its own folder based on zip name
-                $plugin_name = pathinfo($file['name'], PATHINFO_FILENAME);
-                $dest = __DIR__ . '/../plugins/' . $plugin_name;
-                if (!is_dir($dest)) {
-                    mkdir($dest, 0755, true);
-                    $zip->extractTo($dest);
-                    $success = "Plugin '$plugin_name' uploaded successfully!";
-                } else {
-                    $error = "A plugin with that name already exists.";
-                }
+                // Extract to a temporary directory first to determine the structure
+                $temp_extract = __DIR__ . '/../plugins/temp_' . uniqid();
+                mkdir($temp_extract, 0755, true);
+                $zip->extractTo($temp_extract);
                 $zip->close();
+
+                // Find the directory containing plugin.php
+                $found_path = '';
+                $it = new RecursiveDirectoryIterator($temp_extract);
+                foreach (new RecursiveIteratorIterator($it) as $f) {
+                    if (basename($f) === 'plugin.php') {
+                        $found_path = dirname($f);
+                        break;
+                    }
+                }
+
+                if ($found_path) {
+                    $plugin_slug = basename($found_path);
+                    $dest = __DIR__ . '/../plugins/' . $plugin_slug;
+                    if (!is_dir($dest)) {
+                        rename($found_path, $dest);
+                        $success = "Plugin '" . $plugin_slug . "' installed successfully!";
+                    } else {
+                        $error = "A plugin with the folder name '$plugin_slug' already exists.";
+                    }
+                } else {
+                    $error = "Invalid plugin ZIP: 'plugin.php' not found.";
+                }
+
+                // Cleanup temp dir
+                $files = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator($temp_extract, RecursiveDirectoryIterator::SKIP_DOTS),
+                    RecursiveIteratorIterator::CHILD_FIRST
+                );
+                foreach ($files as $fileinfo) {
+                    $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+                    if (file_exists($fileinfo->getRealPath())) $todo($fileinfo->getRealPath());
+                }
+                if (is_dir($temp_extract)) rmdir($temp_extract);
             } else {
                 $error = "Failed to open ZIP file.";
             }
@@ -110,7 +137,7 @@ $enabled_plugins = $config['enabled_plugins'] ?? [];
         .sidebar ul li { margin-bottom: 1rem; }
         .sidebar ul li a { color: #ccc; text-decoration: none; display: block; padding: 0.5rem; border-radius: 4px; }
         .sidebar ul li a:hover, .sidebar ul li a.active { background: #444; color: #fff; }
-        .main-content { flex: 1; padding: 2rem; }
+        .main-content { flex: 1; padding: 2rem; margin-left: 250px; margin-top: 50px; }
         .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1rem; }
         .btn { padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; cursor: pointer; border: none; font-size: 0.9rem; }
         .btn-success { background: #28a745; color: #fff; }

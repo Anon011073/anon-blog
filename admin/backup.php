@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <title>Backup & Restore - Admin Panel</title>
     <style>
         body { font-family: sans-serif; margin: 0; display: flex; min-height: 100vh; background: #f4f4f4; }
-        .main-content { flex: 1; padding: 2rem; }
+        .main-content { flex: 1; padding: 2rem; margin-left: 250px; margin-top: 50px; }
         .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 2rem; }
         .sidebar { width: 250px; background: #222; color: #fff; padding: 1rem; }
         .sidebar h2 { font-size: 1.2rem; margin-bottom: 2rem; }

@@ -52,7 +52,7 @@ $menu = $config['menu'] ?? [
         .sidebar ul li { margin-bottom: 1rem; }
         .sidebar ul li a { color: #ccc; text-decoration: none; display: block; padding: 0.5rem; border-radius: 4px; }
         .sidebar ul li a:hover, .sidebar ul li a.active { background: #444; color: #fff; }
-        .main-content { flex: 1; padding: 2rem; }
+        .main-content { flex: 1; padding: 2rem; margin-left: 250px; margin-top: 50px; }
         .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .form-group { display: flex; gap: 10px; margin-bottom: 1rem; align-items: center; }
         input[type="text"] { flex: 1; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
