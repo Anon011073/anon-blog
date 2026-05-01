@@ -114,15 +114,85 @@ $images = glob($uploads_dir . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
             <?php foreach ($images as $img):
                 $img_name = basename($img);
             ?>
-                <div class="media-item">
+                <div class="media-item" data-filename="<?php echo htmlspecialchars($img_name); ?>">
                     <img src="../uploads/<?php echo $img_name; ?>" alt="">
                     <div class="media-info">
                         <span title="<?php echo htmlspecialchars($img_name); ?>"><?php echo htmlspecialchars($img_name); ?></span>
-                        <a href="media.php?delete=<?php echo urlencode($img_name); ?>&token=<?php echo get_csrf_token(); ?>" class="btn-danger btn" style="padding: 2px 5px; font-size: 0.7rem;" onclick="return confirm('Delete this image?')">X</a>
+                        <div style="display: flex; gap: 4px;">
+                            <a href="media_crop.php?img=<?php echo urlencode($img_name); ?>" class="btn-primary btn" style="padding: 2px 5px; font-size: 0.7rem;" title="Crop">✂️</a>
+                            <a href="media.php?delete=<?php echo urlencode($img_name); ?>&token=<?php echo get_csrf_token(); ?>" class="btn-danger btn" style="padding: 2px 5px; font-size: 0.7rem;" onclick="return confirm('Delete this image?')">X</a>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
+
+        <?php
+        $plugins = get_enabled_plugins_data();
+        if (isset($plugins['gallery'])): ?>
+        <div class="card" style="margin-top: 40px; border-top: 4px solid #007bff;">
+            <h3>🖼️ Gallery Shortcode Helper</h3>
+            <p>Select images by clicking on them to generate a gallery shortcode.</p>
+            <div id="selected-list" style="margin-bottom: 15px; font-style: italic; color: #666;">No images selected.</div>
+            <code id="generated-shortcode" style="display: block; background: #f0f0f0; padding: 10px; margin-bottom: 15px;">[gallery images=""]</code>
+            <button class="btn btn-primary" onclick="copyShortcode()">Copy Shortcode</button>
+            <button class="btn" onclick="clearSelection()">Clear Selection</button>
+        </div>
+
+        <script>
+            let selectedImages = [];
+            document.querySelectorAll('.media-item').forEach(item => {
+                item.style.cursor = 'pointer';
+                item.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A' || e.target.parentElement.tagName === 'A') return;
+
+                    const filename = this.getAttribute('data-filename');
+                    const index = selectedImages.indexOf(filename);
+
+                    if (index > -1) {
+                        selectedImages.splice(index, 1);
+                        this.style.outline = 'none';
+                        this.style.opacity = '1';
+                    } else {
+                        selectedImages.push(filename);
+                        this.style.outline = '4px solid #007bff';
+                        this.style.opacity = '0.8';
+                    }
+
+                    updateHelper();
+                });
+            });
+
+            function updateHelper() {
+                const list = document.getElementById('selected-list');
+                const code = document.getElementById('generated-shortcode');
+
+                if (selectedImages.length === 0) {
+                    list.innerText = 'No images selected.';
+                    code.innerText = '[gallery images=""]';
+                } else {
+                    list.innerText = 'Selected: ' + selectedImages.join(', ');
+                    code.innerText = '[gallery images="' + selectedImages.join(', ') + '"]';
+                }
+            }
+
+            function copyShortcode() {
+                const code = document.getElementById('generated-shortcode').innerText;
+                navigator.clipboard.writeText(code).then(() => {
+                    alert('Shortcode copied to clipboard!');
+                });
+            }
+
+            function clearSelection() {
+                selectedImages = [];
+                document.querySelectorAll('.media-item').forEach(item => {
+                    item.style.outline = 'none';
+                    item.style.opacity = '1';
+                });
+                updateHelper();
+            }
+        </script>
+        <?php endif; ?>
     </div>
 </body>
 </html>
