@@ -144,7 +144,7 @@ usort($images, function($a, $b) {
         <?php
         $plugins = get_enabled_plugins_data();
         if (isset($plugins['gallery'])): ?>
-        <div class="card" id="gallery-helper" style="margin-top: 40px; border-top: 5px solid #007bff; display: none;">
+        <div class="card" id="gallery-helper" style="margin-top: 40px; border-top: 5px solid #007bff;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0;">🖼️ Gallery Shortcode Helper</h3>
                 <span id="selected-count" style="background: #007bff; color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">0 selected</span>
@@ -186,15 +186,15 @@ usort($images, function($a, $b) {
             });
 
             function updateHelper() {
-                const helper = document.getElementById('gallery-helper');
                 const list = document.getElementById('selected-list');
                 const code = document.getElementById('generated-shortcode');
                 const countBadge = document.getElementById('selected-count');
 
                 if (selectedImages.length === 0) {
-                    helper.style.display = 'none';
+                    list.innerText = 'No images selected.';
+                    code.innerText = '[gallery images=""]';
+                    countBadge.innerText = '0 selected';
                 } else {
-                    helper.style.display = 'block';
                     list.innerText = selectedImages.join(', ');
                     code.innerText = '[gallery images="' + selectedImages.join(', ') + '"]';
                     countBadge.innerText = selectedImages.length + ' selected';
