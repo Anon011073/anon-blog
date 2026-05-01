@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Theme Options - AnonBlog Admin</title>
     <style>
         body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; background: #f4f4f4; }
-        .main-content { flex: 1; padding: 2rem; margin-left: 280px; margin-top: 50px; overflow-y: auto; }
+        .main-content { flex: 1; padding: 2rem; margin-left: 310px; margin-top: 50px; overflow-y: auto; }
         .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 2rem; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: bold; }

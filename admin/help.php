@@ -14,7 +14,7 @@ $config = load_config();
     <title>Help & Documentation - AnonBlog Admin</title>
     <style>
         body { font-family: sans-serif; margin: 0; display: flex; min-height: 100vh; background: #f4f4f4; }
-        .main-content { flex: 1; padding: 2rem; margin-left: 280px; margin-top: 50px; overflow-y: auto; }
+        .main-content { flex: 1; padding: 2rem; margin-left: 310px; margin-top: 50px; overflow-y: auto; }
         .card { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); line-height: 1.6; }
         code { background: #f8f9fa; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
         pre { background: #222; color: #fff; padding: 15px; border-radius: 5px; overflow-x: auto; }

@@ -10,6 +10,10 @@ require_once __DIR__ . '/app/theme.php';
 // Plugin initialization
 $config = load_config();
 get_enabled_plugins_data(); // This will load all plugin files and cache them
+// HOOK: system_init
+foreach (get_enabled_plugins_data() as $p_data) {
+    if (isset($p_data['hooks']['system_init'])) $p_data['hooks']['system_init']();
+}
 
 // If not installed, redirect to installer
 if (empty($config)) {

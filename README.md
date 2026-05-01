@@ -48,6 +48,7 @@ We are constantly evolving AnonBlog. Here is what is on the roadmap:
 - **Premium Themes**: More highly optimized and niche-specific templates.
 - **Newsletter Plugin**: Simple subscriber management and email notifications for new posts.
 - **Advanced SEO Suite**: Sitemaps, OpenGraph meta tags, and schema markup.
+- **AnonTax (Categories & Tags)**: Group your posts for better navigation.
 - **Multi-language Support**: Translate your blog into multiple languages.
 
 ---

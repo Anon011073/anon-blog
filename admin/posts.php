@@ -22,7 +22,7 @@ $config = load_config();
         .sidebar ul li { margin-bottom: 1rem; }
         .sidebar ul li a { color: #ccc; text-decoration: none; display: block; padding: 0.5rem; border-radius: 4px; }
         .sidebar ul li a:hover, .sidebar ul li a.active { background: #444; color: #fff; }
-        .main-content { flex: 1; padding: 2rem; margin-left: 280px; margin-top: 50px; }
+        .main-content { flex: 1; padding: 2rem; margin-left: 310px; margin-top: 50px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
         .btn { padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; cursor: pointer; border: none; font-size: 0.9rem; }
         .btn-primary { background: #007bff; color: #fff; }

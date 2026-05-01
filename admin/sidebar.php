@@ -44,7 +44,7 @@ $is_admin = isset($_SESSION['admin_logged_in']);
         <?php if ($is_admin): ?>
             <?php
             $user_files = glob(__DIR__ . '/../content/users/*.json');
-            if (in_array('anon-users', $config['enabled_plugins'] ?? []) && !empty($user_files)):
+            if (isset($config['enabled_plugins']) && in_array('anon-users', $config['enabled_plugins']) && !empty($user_files)):
             ?>
                 <li style="margin-bottom: 5px;"><a href="<?php echo $admin_base; ?>../plugins/anon-users/admin/manage.php" style="color: #ccc; text-decoration: none; display: block; padding: 10px; border-radius: 4px;" class="<?php echo strpos($_SERVER['PHP_SELF'], 'anon-users/admin/manage.php') !== false ? 'active' : ''; ?>">Users</a></li>
             <?php endif; ?>
