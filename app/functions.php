@@ -66,7 +66,17 @@ function update_config($new_config) {
     $merged_config = array_merge($current_config, $new_config);
 
     $content = "<?php\nreturn " . var_export($merged_config, true) . ";\n";
-    return file_put_contents($config_path, $content);
+    $saved = file_put_contents($config_path, $content);
+
+    if ($saved) {
+        // HOOK: config_updated
+        $plugins_data = get_enabled_plugins_data();
+        foreach ($plugins_data as $p_data) {
+            if (isset($p_data['hooks']['config_updated'])) $p_data['hooks']['config_updated']();
+        }
+    }
+
+    return $saved;
 }
 
 /**
