@@ -56,7 +56,16 @@ function save_post($data) {
         $data['excerpt'] = substr(strip_tags($data['content']), 0, 150) . '...';
     }
 
-    return file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT));
+    $saved = file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT));
+
+    if ($saved) {
+        $plugins_data = get_enabled_plugins_data();
+        foreach ($plugins_data as $p_data) {
+            if (isset($p_data['hooks']['post_saved'])) $p_data['hooks']['post_saved']($data['slug']);
+        }
+    }
+
+    return $saved;
 }
 
 /**
@@ -65,7 +74,14 @@ function save_post($data) {
 function delete_post($slug) {
     $file = POSTS_DIR . $slug . '.json';
     if (file_exists($file)) {
-        return unlink($file);
+        $deleted = unlink($file);
+        if ($deleted) {
+            $plugins_data = get_enabled_plugins_data();
+            foreach ($plugins_data as $p_data) {
+                if (isset($p_data['hooks']['post_deleted'])) $p_data['hooks']['post_deleted']($slug);
+            }
+        }
+        return $deleted;
     }
     return false;
 }

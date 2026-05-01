@@ -180,6 +180,9 @@ $enabled_plugins = $config['enabled_plugins'] ?? [];
                             <h3><?php echo htmlspecialchars($data['name'] ?? $name); ?></h3>
                             <p><?php echo htmlspecialchars($data['description'] ?? ''); ?></p>
                             <small>By <?php echo htmlspecialchars($data['author'] ?? 'Unknown'); ?></small>
+                            <?php if ($is_enabled && isset($data['settings_url'])): ?>
+                                <br><a href="<?php echo $data['settings_url']; ?>" style="font-size: 0.8rem; color: #007bff;">Settings</a>
+                            <?php endif; ?>
                             <?php if ($is_enabled && $name === 'anon-users'): ?>
                                 <br><a href="../plugins/anon-users/admin/manage.php" style="font-size: 0.8rem; color: #007bff;">Manage Users & News</a>
                             <?php endif; ?>

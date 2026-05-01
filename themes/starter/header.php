@@ -6,7 +6,6 @@
     <title><?php echo isset($post) ? $post['title'] . ' - ' : ''; ?><?php echo htmlspecialchars($config['site_name']); ?></title>
 
     <?php
-    // STARTER THEME: Loading Google Fonts based on theme options
     $heading_font = $config['theme_options']['heading_font'] ?? 'Montserrat';
     ?>
     <link href="https://fonts.googleapis.com/css2?family=<?php echo str_replace(' ', '+', $heading_font); ?>:wght@700&display=swap" rel="stylesheet">
@@ -14,7 +13,6 @@
     <link rel="stylesheet" href="themes/starter/style.css">
 
     <style>
-        /* STARTER THEME: Dynamic Styles from Theme Options */
         :root {
             --accent-color: <?php echo $config['theme_options']['accent_color'] ?? '#e91e63'; ?>;
             --heading-font: '<?php echo $heading_font; ?>', sans-serif;
@@ -33,8 +31,10 @@
                 <ul>
                     <?php
                     $menu = $config['menu'] ?? [['label' => 'Home', 'url' => 'index.php']];
-                    foreach ($menu as $item): ?>
-                        <li><a href="<?php echo htmlspecialchars($item['url']); ?>"><?php echo htmlspecialchars($item['label'] ?? $item['title']); ?></a></li>
+                    foreach ($menu as $item):
+                        $label = $item['label'] ?? $item['title'] ?? 'Link';
+                    ?>
+                        <li><a href="<?php echo htmlspecialchars($item['url'] ?? '#'); ?>"><?php echo htmlspecialchars($label); ?></a></li>
                     <?php endforeach; ?>
                 </ul>
             </nav>
