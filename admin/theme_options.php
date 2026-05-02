@@ -45,13 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['reset'])) {
         if ($is_custom_theme) {
             $reset_options = [];
-            foreach ($theme_meta['options'] as $opt) {
-                $reset_options[$opt['name']] = $opt['default'] ?? '';
+            foreach ($theme_meta['options'] as $key => $opt) {
+                $name = isset($opt['name']) ? $opt['name'] : $key;
+                $reset_options[$name] = $opt['default'] ?? '';
             }
             update_config(['theme_options' => $reset_options]);
         } else {
             $reset_config = $defaults;
-            // Preserve custom CSS on reset
             $reset_config['custom_css'] = $config['custom_css'] ?? '';
             update_config($reset_config);
         }
@@ -59,11 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         if ($is_custom_theme) {
             $new_options = [];
-            foreach ($theme_meta['options'] as $opt) {
+            foreach ($theme_meta['options'] as $key => $opt) {
+                $name = isset($opt['name']) ? $opt['name'] : $key;
                 if ($opt['type'] === 'checkbox') {
-                    $new_options[$opt['name']] = isset($_POST[$opt['name']]);
+                    $new_options[$name] = isset($_POST[$name]);
                 } else {
-                    $new_options[$opt['name']] = $_POST[$opt['name']] ?? $opt['default'];
+                    $new_options[$name] = $_POST[$name] ?? ($opt['default'] ?? '');
                 }
             }
             update_config(['theme_options' => $new_options]);
@@ -95,17 +96,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Theme Options - AnonBlog Admin</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; background: #f4f4f4; }
-        .main-content { flex: 1; padding: 2rem; margin-left: 310px; margin-top: 50px; overflow-y: auto; }
+        .main-content { margin-left: 310px; margin-top: 60px; padding: 20px; }
         .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 2rem; }
         .form-group { margin-bottom: 1.5rem; }
         label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
-        input[type="text"], select, input[type="color"], textarea { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input[type="text"], input[type="number"], select, input[type="color"], textarea { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         input[type="color"] { height: 50px; padding: 2px; }
-        .btn { padding: 0.75rem 1.5rem; border-radius: 4px; text-decoration: none; cursor: pointer; border: none; font-size: 1rem; }
-        .btn-primary { background: #007bff; color: #fff; }
-        .btn-secondary { background: #6c757d; color: #fff; }
     </style>
 </head>
 <body>
@@ -113,32 +111,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="main-content">
         <h1>Theme Options (<?php echo htmlspecialchars($theme_meta['name'] ?? ucfirst($current_theme)); ?>)</h1>
 
-        <?php if ($success): ?><div style="background: #dff0d8; color: #3c763d; padding: 10px; margin-bottom: 20px; border-radius: 4px;"><?php echo $success; ?></div><?php endif; ?>
+        <?php if ($success): ?><div class="alert alert-success"><?php echo $success; ?></div><?php endif; ?>
 
         <div class="card">
             <form method="POST">
                 <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
 
                 <?php if ($is_custom_theme): ?>
-                    <?php foreach ($theme_meta['options'] as $opt):
-                        $val = $config['theme_options'][$opt['name']] ?? $opt['default'];
+                    <?php foreach ($theme_meta['options'] as $key => $opt):
+                        $name = isset($opt['name']) ? $opt['name'] : $key;
+                        $val = $config['theme_options'][$name] ?? ($opt['default'] ?? '');
                     ?>
                         <div class="form-group">
                             <label><?php echo $opt['label']; ?></label>
-                            <?php if ($opt['type'] === 'text'): ?>
-                                <input type="text" name="<?php echo $opt['name']; ?>" value="<?php echo htmlspecialchars($val); ?>">
+                            <?php if ($opt['type'] === 'text' || $opt['type'] === 'number'): ?>
+                                <input type="<?php echo $opt['type']; ?>" name="<?php echo $name; ?>" value="<?php echo htmlspecialchars($val); ?>">
                             <?php elseif ($opt['type'] === 'font'): ?>
-                                <select name="<?php echo $opt['name']; ?>">
+                                <select name="<?php echo $name; ?>">
                                     <?php foreach ($google_fonts as $font): ?>
                                         <option value="<?php echo $font; ?>" <?php echo $val === $font ? 'selected' : ''; ?>><?php echo $font; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             <?php elseif ($opt['type'] === 'color'): ?>
-                                <input type="color" name="<?php echo $opt['name']; ?>" value="<?php echo htmlspecialchars($val); ?>">
+                                <input type="color" name="<?php echo $name; ?>" value="<?php echo htmlspecialchars($val); ?>">
                             <?php elseif ($opt['type'] === 'checkbox'): ?>
-                                <input type="checkbox" name="<?php echo $opt['name']; ?>" <?php echo $val ? 'checked' : ''; ?>>
+                                <input type="checkbox" name="<?php echo $name; ?>" <?php echo $val ? 'checked' : ''; ?> value="1">
                             <?php elseif ($opt['type'] === 'select'): ?>
-                                <select name="<?php echo $opt['name']; ?>">
+                                <select name="<?php echo $name; ?>">
                                     <?php foreach ($opt['options'] as $k => $v): ?>
                                         <option value="<?php echo $k; ?>" <?php echo $val == $k ? 'selected' : ''; ?>><?php echo $v; ?></option>
                                     <?php endforeach; ?>

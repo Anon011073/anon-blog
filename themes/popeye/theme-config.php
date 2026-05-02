@@ -6,19 +6,22 @@ return [
     'name' => 'Popeye',
     'description' => 'A clean, single-column focused theme for minimalists.',
     'author' => 'AnonBlog Team',
-    'version' => '1.0.0',
+    'version' => '1.0.1',
     'options' => [
-        'site_width' => [
+        [
+            'name' => 'site_width',
             'label' => 'Site Content Width (px)',
             'type' => 'number',
             'default' => 650
         ],
-        'header_blur' => [
+        [
+            'name' => 'header_blur',
             'label' => 'Enable Glassmorphism Header',
             'type' => 'checkbox',
             'default' => true
         ],
-        'widget_pos' => [
+        [
+            'name' => 'widget_pos',
             'label' => 'Widget Area Placement',
             'type' => 'select',
             'options' => [
@@ -28,12 +31,14 @@ return [
             ],
             'default' => 'bottom'
         ],
-        'show_tax_meta' => [
+        [
+            'name' => 'show_tax_meta',
             'label' => 'Show Categories & Tags in Meta',
             'type' => 'checkbox',
             'default' => true
         ],
-        'featured_img_style' => [
+        [
+            'name' => 'featured_img_style',
             'label' => 'Featured Image Style',
             'type' => 'select',
             'options' => [
@@ -42,17 +47,20 @@ return [
             ],
             'default' => 'full'
         ],
-        'body_font' => [
+        [
+            'name' => 'body_font',
             'label' => 'Body Font',
             'type' => 'font',
             'default' => 'Inter'
         ],
-        'title_font' => [
+        [
+            'name' => 'title_font',
             'label' => 'Title Font',
             'type' => 'font',
             'default' => 'Playfair Display'
         ],
-        'primary_color' => [
+        [
+            'name' => 'primary_color',
             'label' => 'Primary Brand Color',
             'type' => 'color',
             'default' => '#000000'
