@@ -44,6 +44,11 @@
         <?php endif; ?>
         <?php echo $options['custom_css'] ?? ''; ?>
     </style>
+    <?php
+    foreach (get_enabled_plugins_data() as $p) {
+        if (isset($p['hooks']['system_header'])) echo $p['hooks']['system_header']();
+    }
+    ?>
 </head>
 <body data-theme="<?php echo $config['dark_mode'] ?? false ? 'dark' : 'light'; ?>">
     <header class="site-header">

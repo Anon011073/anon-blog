@@ -22,6 +22,11 @@
         a { color: var(--accent-color); }
         .btn { background: var(--accent-color); color: #fff; padding: 10px 20px; border-radius: 5px; text-decoration: none; }
     </style>
+    <?php
+    foreach (get_enabled_plugins_data() as $p) {
+        if (isset($p['hooks']['system_header'])) echo $p['hooks']['system_header']();
+    }
+    ?>
 </head>
 <body>
     <header class="site-header">

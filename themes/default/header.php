@@ -41,6 +41,11 @@
             document.documentElement.classList.add('dark');
         }
     </script>
+    <?php
+    foreach (get_enabled_plugins_data() as $p) {
+        if (isset($p['hooks']['system_header'])) echo $p['hooks']['system_header']();
+    }
+    ?>
 </head>
 <?php
 $body_classes = [];
