@@ -1,9 +1,12 @@
-<?php
-$widget_pos = ($config['theme_options'] ?? [])['widget_pos'] ?? 'bottom';
-if ($widget_pos === 'bottom' || $widget_pos === 'both') {
-    $include_part('widgets-area');
-}
-?>
+            <?php
+            $widgets = $config['widget_areas'] ?? [];
+            if (!empty($widgets['lower'])): ?>
+                <div class="widgets-container lower-widgets">
+                    <?php foreach ($widgets['lower'] as $w):
+                        if (file_exists(__DIR__ . "/widget-{$w}.php")) include __DIR__ . "/widget-{$w}.php";
+                    endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
     </main>
 
@@ -21,6 +24,7 @@ if ($widget_pos === 'bottom' || $widget_pos === 'both') {
             const current = body.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
             body.setAttribute('data-theme', next);
+            document.documentElement.setAttribute('data-theme', next);
 
             // Save to cookie for PHP persistence
             document.cookie = "dark_mode=" + (next === 'dark' ? '1' : '0') + ";path=/;max-age=31536000";

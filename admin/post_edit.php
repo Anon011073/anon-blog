@@ -42,6 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'comments_on' => $comments_on
         ];
 
+        // HOOK: post_saved_pre
+        $plugins_data = get_enabled_plugins_data();
+        foreach ($plugins_data as $p_data) {
+            if (isset($p_data['hooks']['post_saved_pre'])) {
+                $post_data = $p_data['hooks']['post_saved_pre']($post_data);
+            }
+        }
+
         // If slug changed, delete old file
         if ($slug && $slug !== $new_slug) {
             delete_post($slug);

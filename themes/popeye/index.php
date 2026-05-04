@@ -5,17 +5,20 @@
         <p>No posts found.</p>
     <?php else: ?>
         <?php
-        $img_style = ($config['theme_options'] ?? [])['featured_img_style'] ?? 'full';
+        $t_options = $config['theme_options'] ?? [];
+        $img_style = $t_options['featured_img_style'] ?? 'full';
+        $titles_only = $t_options['titles_only'] ?? false;
+
         foreach ($posts as $post): ?>
-            <article class="post-entry <?php echo $img_style === 'thumb' ? 'has-thumb' : ''; ?>">
-                <?php if ($img_style === 'full' && !empty($post['featured_image'])): ?>
+            <article class="post-entry <?php echo $img_style === 'thumb' ? 'has-thumb' : ''; ?> <?php echo $titles_only ? 'titles-only' : ''; ?>">
+                <?php if (!$titles_only && $img_style === 'full' && !empty($post['featured_image'])): ?>
                     <div class="entry-featured-image">
                         <img src="uploads/<?php echo htmlspecialchars($post['featured_image']); ?>" alt="">
                     </div>
                 <?php endif; ?>
 
                 <div class="entry-content-wrapper">
-                    <?php if ($img_style === 'thumb' && !empty($post['featured_image'])): ?>
+                    <?php if (!$titles_only && $img_style === 'thumb' && !empty($post['featured_image'])): ?>
                         <div class="entry-thumb">
                             <img src="uploads/<?php echo htmlspecialchars($post['featured_image']); ?>" alt="">
                         </div>
@@ -27,17 +30,18 @@
                             <div class="entry-meta">
                                 <time><?php echo format_date($post['date']); ?></time>
                                 <?php
-                                $show_tax = ($config['theme_options'] ?? [])['show_tax_meta'] ?? true;
-                                if ($show_tax && isset($post['category'])): ?>
+                                if (($t_options['show_tax_meta'] ?? true) && isset($post['category'])): ?>
                                     <span class="meta-sep">&bull;</span>
                                     <span class="category"><?php echo htmlspecialchars($post['category']); ?></span>
                                 <?php endif; ?>
                             </div>
                         </header>
 
+                        <?php if (!$titles_only): ?>
                         <div class="entry-excerpt">
                             <?php echo htmlspecialchars($post['excerpt'] ?? ''); ?>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </article>

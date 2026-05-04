@@ -12,6 +12,8 @@
     $title_font = $options['title_font'] ?? 'Playfair Display';
     $primary_color = $options['primary_color'] ?? '#000000';
     $header_blur = $options['header_blur'] ?? true;
+    $header_sticky = $options['header_sticky'] ?? true;
+    $line_height = $options['line_height'] ?? 1.6;
     ?>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +25,10 @@
     <?php
     $assets = get_plugin_assets();
     foreach ($assets['css'] as $css) echo '<link rel="stylesheet" href="'.$css.'">';
+
+    foreach (get_enabled_plugins_data() as $p) {
+        if (isset($p['hooks']['system_header'])) echo $p['hooks']['system_header']();
+    }
     ?>
 
     <style>
@@ -31,26 +37,47 @@
             --body-font: '<?php echo $body_font; ?>', sans-serif;
             --title-font: '<?php echo $title_font; ?>', serif;
             --primary-color: <?php echo $primary_color; ?>;
+            --line-height: <?php echo $line_height; ?>;
         }
+        <?php if ($header_sticky): ?>
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        <?php else: ?>
+        .site-header { position: static !important; }
+        <?php endif; ?>
+
         <?php if ($header_blur): ?>
         .site-header {
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            background: rgba(255, 255, 255, 0.7) !important;
         }
-        [data-theme="dark"] .site-header {
-            background: rgba(18, 18, 18, 0.8);
+        [data-theme="dark"] .site-header,
+        body[data-theme="dark"] .site-header {
+            background: rgba(18, 18, 18, 0.7) !important;
+        }
+        <?php else: ?>
+        .site-header {
+            background: var(--bg-color) !important;
         }
         <?php endif; ?>
         <?php echo $options['custom_css'] ?? ''; ?>
     </style>
-    <?php
-    foreach (get_enabled_plugins_data() as $p) {
-        if (isset($p['hooks']['system_header'])) echo $p['hooks']['system_header']();
-    }
-    ?>
+    <script>
+        // Set initial theme correctly from cookie
+        (function() {
+            const cookieTheme = document.cookie.split('; ').find(row => row.startsWith('dark_mode='));
+            if (cookieTheme) {
+                const isDark = cookieTheme.split('=')[1] === '1';
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            }
+        })();
+    </script>
 </head>
-<body data-theme="<?php echo $config['dark_mode'] ?? false ? 'dark' : 'light'; ?>">
+<body data-theme="<?php echo (isset($_COOKIE['dark_mode']) && $_COOKIE['dark_mode'] === '1') ? 'dark' : 'light'; ?>">
     <header class="site-header">
         <div class="container header-inner">
             <div class="site-branding">
@@ -65,7 +92,7 @@
 
                 <?php if ($config['show_search_menu'] ?? false): ?>
                     <form action="index.php" method="GET" class="nav-search">
-                        <input type="text" name="s" placeholder="Search..." style="background: rgba(128,128,128,0.1); border: none; padding: 5px 10px; border-radius: 4px; color: inherit; font-size: 0.9rem; width: 120px;">
+                        <input type="text" name="s" placeholder="Search..." style="background: rgba(128,128,128,0.1); border: none; padding: 5px 10px; border-radius: 4px; color: inherit; font-size: 0.9rem; width: 100px;">
                     </form>
                 <?php endif; ?>
 
@@ -80,8 +107,11 @@
     <main class="site-main">
         <div class="container">
             <?php
-            $widget_pos = $options['widget_pos'] ?? 'bottom';
-            if ($widget_pos === 'top' || $widget_pos === 'both') {
-                $include_part('widgets-area');
-            }
-            ?>
+            $widgets = $config['widget_areas'] ?? [];
+            if (!empty($widgets['upper'])): ?>
+                <div class="widgets-container upper-widgets">
+                    <?php foreach ($widgets['upper'] as $w):
+                        if (file_exists(__DIR__ . "/widget-{$w}.php")) include __DIR__ . "/widget-{$w}.php";
+                    endforeach; ?>
+                </div>
+            <?php endif; ?>

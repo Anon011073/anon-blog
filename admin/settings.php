@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $site_name = $_POST['site_name'] ?? $config['site_name'];
     $admin_nickname = $_POST['admin_nickname'] ?? $config['admin_nickname'] ?? 'Admin';
+    $admin_about_me = $_POST['admin_about_me'] ?? $config['admin_about_me'] ?? '';
     $comments_enabled = isset($_POST['comments_enabled']);
     $disqus_shortname = sanitize($_POST['disqus_shortname'] ?? '');
     $show_search_menu = isset($_POST['show_search_menu']);
@@ -26,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_config = [
         'site_name' => $site_name,
         'admin_nickname' => $admin_nickname,
+        'admin_about_me' => $admin_about_me,
         'comments_enabled' => $comments_enabled,
         'disqus_shortname' => $disqus_shortname,
         'show_search_menu' => $show_search_menu,
@@ -139,6 +141,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <div class="form-group">
                         <label for="site_name">Site Name</label>
                         <input type="text" id="site_name" name="site_name" value="<?php echo htmlspecialchars($config['site_name']); ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="admin_about_me">About Me / Author Bio</label>
+                        <textarea id="admin_about_me" name="admin_about_me" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; height: 80px;"><?php echo htmlspecialchars($config['admin_about_me'] ?? ''); ?></textarea>
                     </div>
 
                     <div class="form-group">

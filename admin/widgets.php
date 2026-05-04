@@ -14,7 +14,7 @@ $available_widgets = [
     'links' => 'Custom Links'
 ];
 
-$areas = ['sidebar', 'footer1', 'footer2', 'footer3'];
+$areas = ['sidebar', 'footer1', 'footer2', 'footer3', 'upper', 'lower'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token($_POST['csrf_token'])) {
@@ -95,7 +95,16 @@ $widget_links = $config['widget_links'] ?? [];
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div>
-                    <?php foreach ($areas as $area): ?>
+                    <?php
+                    $active_theme = $config['theme'] ?? 'default';
+                    foreach ($areas as $area):
+                        // Hide footer areas if not default theme
+                        if ($active_theme !== 'default' && strpos($area, 'footer') === 0) continue;
+                        // Hide upper/lower if default theme
+                        if ($active_theme === 'default' && ($area === 'upper' || $area === 'lower')) continue;
+                        // Hide sidebar for Popeye specifically
+                        if ($active_theme === 'popeye' && $area === 'sidebar') continue;
+                    ?>
                         <div class="card">
                             <h3><?php echo ucfirst($area); ?></h3>
                             <div class="area-box" id="area-<?php echo $area; ?>">
