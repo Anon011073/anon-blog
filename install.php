@@ -71,7 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errors)) {
     <div class="install-box">
         <h1>CMS Installation</h1>
         <?php if ($success): ?>
-            <div class="success">Installation successful! <a href="admin/login.php">Go to Admin</a></div>
+            <div class="success">
+                <p>Installation successful!</p>
+                <p><strong>Security Notice:</strong> Please delete <code>install.php</code> manually.</p>
+                <p><a href="admin/login.php">Go to Admin Panel</a></p>
+            </div>
         <?php else: ?>
             <?php if ($errors): ?><div class="error"><?php foreach ($errors as $e) echo "<div>$e</div>"; ?></div><?php endif; ?>
             <form method="POST">

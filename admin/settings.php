@@ -15,44 +15,47 @@ $all_plugins_data = get_enabled_plugins_data();
 
 if ($plugin_to_configure && isset($all_plugins_data[$plugin_to_configure])) {
     $p_data = $all_plugins_data[$plugin_to_configure];
+    $plugin_settings_file = __DIR__ . '/../plugins/' . $plugin_to_configure . '/admin/settings.php';
 
-    // Handle Prism Settings specifically
-    if ($plugin_to_configure === 'prism') {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_plugin'])) {
-            update_config(['prism_theme' => $_POST['prism_theme']]);
-            $success = "Prism settings saved.";
-            $config = load_config();
-        }
-        ?>
-        <!DOCTYPE html>
-        <html lang="en">
-        <head><meta charset="UTF-8"><title>Prism Settings</title><link rel="stylesheet" href="style.css"></head>
-        <body>
-        <?php include "sidebar.php"; ?>
-        <div style="margin-left:310px; padding:2rem;">
-            <h1>Prism Syntax Highlighter Settings</h1>
-            <?php if ($success): ?><div class="alert alert-success"><?php echo $success; ?></div><?php endif; ?>
-            <div class="card" style="background:#fff; padding:20px; border-radius:8px;">
-                <form method="POST">
-                    <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
-                    <label>Prism Theme</label>
-                    <select name="prism_theme" style="width:100%; padding:10px; margin-top:10px;">
-                        <option value="prism" <?php echo ($config['prism_theme'] ?? '') === 'prism' ? 'selected' : ''; ?>>Default</option>
-                        <option value="okaidia" <?php echo ($config['prism_theme'] ?? '') === 'okaidia' ? 'selected' : ''; ?>>Okaidia (Dark)</option>
-                        <option value="tomorrow" <?php echo ($config['prism_theme'] ?? '') === 'tomorrow' ? 'selected' : ''; ?>>Tomorrow Night</option>
-                    </select>
-                    <br><br>
-                    <button type="submit" name="save_plugin" class="btn btn-primary">Save Settings</button>
-                </form>
+    if (file_exists($plugin_settings_file)) {
+        include $plugin_settings_file;
+        exit;
+    } else {
+        // Fallback for Prism if no file (backwards compatibility for my previous build)
+        if ($plugin_to_configure === 'prism') {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_plugin'])) {
+                update_config(['prism_theme' => $_POST['prism_theme']]);
+                $success = "Prism settings saved.";
+                $config = load_config();
+            }
+            ?>
+            <!DOCTYPE html>
+            <html lang="en"><head><meta charset="UTF-8"><title>Prism Settings</title><link rel="stylesheet" href="style.css"></head><body>
+            <?php include "sidebar.php"; ?>
+            <div style="margin-left:310px; padding:2rem;">
+                <h1>Prism Settings</h1>
+                <?php if ($success): ?><div class="alert alert-success"><?php echo $success; ?></div><?php endif; ?>
+                <div class="card" style="background:#fff; padding:20px; border-radius:8px;">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
+                        <label>Prism Theme</label>
+                        <select name="prism_theme" style="width:100%; padding:10px; margin-top:10px;">
+                            <option value="prism" <?php echo ($config['prism_theme'] ?? '') === 'prism' ? 'selected' : ''; ?>>Default</option>
+                            <option value="okaidia" <?php echo ($config['prism_theme'] ?? '') === 'okaidia' ? 'selected' : ''; ?>>Okaidia (Dark)</option>
+                        </select>
+                        <br><br><button type="submit" name="save_plugin" class="btn btn-primary">Save Settings</button>
+                    </form>
+                </div>
             </div>
-        </div>
-        </body></html>
-        <?php exit;
-    }
+            </body></html>
+            <?php exit;
+        }
 
-    // Default placeholder for other plugins
-    echo "<h1>Settings for ".htmlspecialchars($p_data['name'])."</h1><p>No configurable options for this plugin.</p><a href='plugins.php'>Back</a>";
-    exit;
+        echo "<!DOCTYPE html><html lang='en'><head><link rel='stylesheet' href='style.css'></head><body>";
+        include "sidebar.php";
+        echo "<div style='margin-left:310px; padding:2rem;'><h1>Settings for ".htmlspecialchars($p_data['name'])."</h1><p>No configurable options for this plugin.</p><a href='plugins.php'>&larr; Back to Plugins</a></div></body></html>";
+        exit;
+    }
 }
 // --- END PLUGIN SETTINGS HANDLER ---
 

@@ -125,8 +125,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </div>
             <div class="card">
                 <h2>Restore Backup</h2>
-                <div class="warning">Warning: Restoring will overwrite existing data!</div>
-                <form method="POST" enctype="multipart/form-data">
+                <div class="warning">
+                    <strong>WARNING:</strong> Restoring will <strong>DELETE</strong> current data in the selected categories and replace it with the backup content. This cannot be undone.
+                </div>
+                <form method="POST" enctype="multipart/form-data" onsubmit="return confirm('Are you absolutely sure? Current content in selected categories will be PERMANENTLY DELETED.')">
                     <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
                     <input type="hidden" name="action" value="restore">
                     <input type="file" name="backup_file" accept=".zip" required><br><br>
