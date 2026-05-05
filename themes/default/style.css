@@ -163,23 +163,30 @@ pre {
     font-weight: bold;
 }
 
-/* Grid Template */
-.template-grid {
+/* Grid Templates */
+.template-grid, .template-grid_sidebar {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
 }
 
-.template-grid .post-card {
+.template-grid .post-card, .template-grid_sidebar .post-card {
     border: 1px solid var(--border-color);
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 0;
 }
 
-.template-grid .post-thumbnail img {
+.template-grid .post-thumbnail img, .template-grid_sidebar .post-thumbnail img {
     height: 200px;
     object-fit: cover;
+}
+
+/* Specific for Grid with Sidebar - limit to 2 columns if sidebar exists */
+@media (min-width: 992px) {
+    .template-grid_sidebar {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 /* Single Post */

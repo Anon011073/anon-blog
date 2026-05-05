@@ -9,234 +9,137 @@ $error = '';
 $success = '';
 $uploads_dir = __DIR__ . '/../uploads/';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!verify_csrf_token($_POST['csrf_token'])) {
-        die('CSRF token validation failed.');
+// --- PLUGIN SETTINGS HANDLER ---
+$plugin_to_configure = $_GET['plugin'] ?? '';
+$all_plugins_data = get_enabled_plugins_data();
+
+if ($plugin_to_configure && isset($all_plugins_data[$plugin_to_configure])) {
+    $p_data = $all_plugins_data[$plugin_to_configure];
+
+    // Handle Prism Settings specifically
+    if ($plugin_to_configure === 'prism') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_plugin'])) {
+            update_config(['prism_theme' => $_POST['prism_theme']]);
+            $success = "Prism settings saved.";
+            $config = load_config();
+        }
+        ?>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head><meta charset="UTF-8"><title>Prism Settings</title><link rel="stylesheet" href="style.css"></head>
+        <body>
+        <?php include "sidebar.php"; ?>
+        <div style="margin-left:310px; padding:2rem;">
+            <h1>Prism Syntax Highlighter Settings</h1>
+            <?php if ($success): ?><div class="alert alert-success"><?php echo $success; ?></div><?php endif; ?>
+            <div class="card" style="background:#fff; padding:20px; border-radius:8px;">
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
+                    <label>Prism Theme</label>
+                    <select name="prism_theme" style="width:100%; padding:10px; margin-top:10px;">
+                        <option value="prism" <?php echo ($config['prism_theme'] ?? '') === 'prism' ? 'selected' : ''; ?>>Default</option>
+                        <option value="okaidia" <?php echo ($config['prism_theme'] ?? '') === 'okaidia' ? 'selected' : ''; ?>>Okaidia (Dark)</option>
+                        <option value="tomorrow" <?php echo ($config['prism_theme'] ?? '') === 'tomorrow' ? 'selected' : ''; ?>>Tomorrow Night</option>
+                    </select>
+                    <br><br>
+                    <button type="submit" name="save_plugin" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+        </body></html>
+        <?php exit;
     }
 
+    // Default placeholder for other plugins
+    echo "<h1>Settings for ".htmlspecialchars($p_data['name'])."</h1><p>No configurable options for this plugin.</p><a href='plugins.php'>Back</a>";
+    exit;
+}
+// --- END PLUGIN SETTINGS HANDLER ---
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['action'])) {
+    if (!verify_csrf_token($_POST['csrf_token'])) die('CSRF token validation failed.');
     $site_name = $_POST['site_name'] ?? $config['site_name'];
     $admin_nickname = $_POST['admin_nickname'] ?? $config['admin_nickname'] ?? 'Admin';
     $admin_about_me = $_POST['admin_about_me'] ?? $config['admin_about_me'] ?? '';
     $comments_enabled = isset($_POST['comments_enabled']);
     $disqus_shortname = sanitize($_POST['disqus_shortname'] ?? '');
-    $show_search_menu = isset($_POST['show_search_menu']);
-    $show_excerpts = isset($_POST['show_excerpts']);
     $posts_per_page = (int)($_POST['posts_per_page'] ?? 5);
     $sidebar_position = $_POST['sidebar_position'] ?? 'right';
 
-    $new_config = [
-        'site_name' => $site_name,
-        'admin_nickname' => $admin_nickname,
-        'admin_about_me' => $admin_about_me,
-        'comments_enabled' => $comments_enabled,
-        'disqus_shortname' => $disqus_shortname,
-        'show_search_menu' => $show_search_menu,
-        'show_excerpts' => $show_excerpts,
-        'posts_per_page' => $posts_per_page,
-        'sidebar_position' => $sidebar_position,
-    ];
+    $new_config = $config;
+    $new_config['site_name'] = $site_name;
+    $new_config['admin_nickname'] = $admin_nickname;
+    $new_config['admin_about_me'] = $admin_about_me;
+    $new_config['comments_enabled'] = $comments_enabled;
+    $new_config['disqus_shortname'] = $disqus_shortname;
+    $new_config['posts_per_page'] = $posts_per_page;
+    $new_config['sidebar_position'] = $sidebar_position;
 
-    // Handle avatar upload
     if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['avatar'];
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
-        if (in_array($ext, $allowed) && getimagesize($file['tmp_name'])) {
+        if (in_array($ext, ['jpg','jpeg','png','gif','webp'])) {
             $filename = 'avatar_' . time() . '.' . $ext;
-            if (move_uploaded_file($file['tmp_name'], $uploads_dir . $filename)) {
-                $new_config['admin_avatar'] = $filename;
-            }
-        } else {
-            $error = "Invalid avatar file.";
-        }
-    } else {
-        $new_config['admin_avatar'] = $config['admin_avatar'] ?? '';
-    }
-
-    // Handle password change
-    if (!empty($_POST['new_password'])) {
-        $new_config['admin_pass'] = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
-    } else {
-        $new_config['admin_pass'] = $config['admin_pass'];
-    }
-
-    if (empty($error)) {
-        if (update_config($new_config)) {
-            $success = "Settings updated successfully.";
-            $config = load_config();
-        } else {
-            $error = "Failed to update settings.";
+            if (move_uploaded_file($file['tmp_name'], $uploads_dir . $filename)) $new_config['admin_avatar'] = $filename;
         }
     }
+    if (!empty($_POST['new_password'])) $new_config['admin_pass'] = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+    if (update_config($new_config)) { $success = "Settings updated."; $config = load_config(); }
 }
 
-// Handle Demo Content Import
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'import_demo') {
-    if (!verify_csrf_token($_POST['csrf_token'])) {
-        die('CSRF token validation failed.');
-    }
-
-    if (import_demo_content()) {
-        $success = "Demo content imported successfully! You might need to refresh to see the changes.";
-        $config = load_config();
-    } else {
-        $error = "Failed to import demo content.";
-    }
+    if (!verify_csrf_token($_POST['csrf_token'])) die('CSRF token');
+    if (import_demo_content()) { $success = "Demo imported."; $config = load_config(); }
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - Admin Panel</title>
-    <style>
-        body { font-family: sans-serif; margin: 0; display: flex; min-height: 100vh; background: #f4f4f4; }
-        .sidebar { width: 250px; background: #333; color: #fff; padding: 1rem; }
-        .sidebar h2 { font-size: 1.2rem; margin-bottom: 2rem; }
-        .sidebar ul { list-style: none; padding: 0; }
-        .sidebar ul li { margin-bottom: 1rem; }
-        .sidebar ul li a { color: #ccc; text-decoration: none; display: block; padding: 0.5rem; border-radius: 4px; }
-        .sidebar ul li a:hover, .sidebar ul li a.active { background: #444; color: #fff; }
-        .main-content { flex: 1; padding: 2rem; margin-left: 310px; margin-top: 50px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
-        input[type="text"], input[type="password"], select, input[type="file"], input[type="number"] { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .btn { padding: 0.75rem 1.5rem; border-radius: 4px; text-decoration: none; cursor: pointer; border: none; font-size: 1rem; }
-        .btn-primary { background: #007bff; color: #fff; }
-        .error { color: #d9534f; background: #f2dede; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
-        .success { color: #5cb85c; background: #dff0d8; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
-        .avatar-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 1px solid #ccc; }
-
-        .section-header { cursor: pointer; display: flex; align-items: center; justify-content: space-between; background: #eee; padding: 10px 15px; border-radius: 4px; margin-bottom: 10px; }
-        .section-content { padding: 15px; border: 1px solid #eee; border-top: none; border-radius: 0 0 4px 4px; margin-bottom: 20px; }
-        .icon { font-size: 1.2rem; }
-    </style>
+<head><meta charset="UTF-8"><title>Settings</title><link rel="stylesheet" href="style.css">
+<style>
+    .main-content { margin-left: 310px; margin-top: 50px; padding: 2rem; }
+    .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
+    .avatar-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 1px solid #ccc; }
+    .profile-row { display: flex; gap: 20px; align-items: flex-start; }
+</style>
 </head>
 <body>
 <?php include "sidebar.php"; ?>
-    <div class="main-content">
-        <div class="header">
-            <h1>General Settings</h1>
+<div class="main-content">
+    <h1>Settings</h1>
+    <?php if ($success): ?><div class="alert alert-success"><?php echo $success; ?></div><?php endif; ?>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
+        <div class="card">
+            <h3>⚙️ Site Configuration</h3>
+            <label>Site Name</label><input type="text" name="site_name" value="<?php echo htmlspecialchars($config['site_name']); ?>" required style="width:100%; padding:10px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:15px;">
+                <div><label>Posts Per Page</label><input type="number" name="posts_per_page" value="<?php echo $config['posts_per_page']; ?>" style="width:100%; padding:10px;"></div>
+                <div><label>Sidebar Position</label><select name="sidebar_position" style="width:100%; padding:10px;"><option value="left" <?php echo $config['sidebar_position']==='left'?'selected':''; ?>>Left</option><option value="right" <?php echo $config['sidebar_position']==='right'?'selected':''; ?>>Right</option></select></div>
+            </div>
+            <br>
+            <label><input type="checkbox" name="comments_enabled" <?php echo $config['comments_enabled']?'checked':''; ?>> Enable built-in comments</label>
+            <br><br>
+            <label>Disqus Shortname</label><input type="text" name="disqus_shortname" value="<?php echo htmlspecialchars($config['disqus_shortname'] ?? ''); ?>" style="width:100%; padding:10px;">
+
+            <h3 style="margin-top:30px;">👤 Admin Profile</h3>
+            <div class="profile-row">
+                <div>
+                    <label>Avatar</label><br>
+                    <img src="../uploads/<?php echo $config['admin_avatar'] ?? ''; ?>" class="avatar-preview" onerror="this.src='https://via.placeholder.com/80'"><br>
+                    <input type="file" name="avatar" style="margin-top:10px;">
+                </div>
+                <div style="flex:1;">
+                    <label>Nickname</label><input type="text" name="admin_nickname" value="<?php echo htmlspecialchars($config['admin_nickname'] ?? 'Admin'); ?>" style="width:100%; padding:10px;">
+                    <label style="margin-top:10px; display:block;">About Me / Bio</label>
+                    <textarea name="admin_about_me" style="width:100%; height:80px; padding:10px;"><?php echo htmlspecialchars($config['admin_about_me'] ?? ''); ?></textarea>
+                </div>
+            </div>
+
+            <h3 style="margin-top:30px;">🔒 Security</h3>
+            <label>New Password (leave blank to keep current)</label><input type="password" name="new_password" style="width:100%; padding:10px;">
+            <br><br>
+            <button type="submit" class="btn btn-primary">Save All Settings</button>
         </div>
-
-        <?php if ($error): ?>
-            <div class="error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-        <?php if ($success): ?>
-            <div class="success"><?php echo htmlspecialchars($success); ?></div>
-        <?php endif; ?>
-
-        <form method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
-
-            <div class="card">
-                <div class="section-header">
-                    <span><strong>⚙️ Site Settings</strong></span>
-                </div>
-                <div class="section-content">
-                    <div class="form-group">
-                        <label for="site_name">Site Name</label>
-                        <input type="text" id="site_name" name="site_name" value="<?php echo htmlspecialchars($config['site_name']); ?>" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="admin_about_me">About Me / Author Bio</label>
-                        <textarea id="admin_about_me" name="admin_about_me" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; height: 80px;"><?php echo htmlspecialchars($config['admin_about_me'] ?? ''); ?></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" name="comments_enabled" <?php echo ($config['comments_enabled'] ?? true) ? 'checked' : ''; ?>> Enable built-in comments
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="disqus_shortname">Disqus Shortname</label>
-                        <input type="text" id="disqus_shortname" name="disqus_shortname" value="<?php echo htmlspecialchars($config['disqus_shortname'] ?? ''); ?>" placeholder="e.g. my-blog-shortname">
-                        <small style="color: #666;">If provided, Disqus will be used instead of the built-in comment system. Leave blank to use built-in comments.</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" name="show_search_menu" <?php echo ($config['show_search_menu'] ?? false) ? 'checked' : ''; ?>> Show search icon in navigation menu
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" name="show_excerpts" <?php echo ($config['show_excerpts'] ?? true) ? 'checked' : ''; ?>> Show excerpts on homepage
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="posts_per_page">Posts per page</label>
-                        <input type="number" id="posts_per_page" name="posts_per_page" value="<?php echo htmlspecialchars($config['posts_per_page'] ?? 5); ?>" min="1">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sidebar_position">Sidebar Position (Default Template)</label>
-                        <select id="sidebar_position" name="sidebar_position">
-                            <option value="left" <?php echo ($config['sidebar_position'] ?? '') === 'left' ? 'selected' : ''; ?>>Left</option>
-                            <option value="right" <?php echo ($config['sidebar_position'] ?? '') === 'right' ? 'selected' : ''; ?>>Right</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="section-header">
-                    <span><strong>👤 Profile Settings</strong></span>
-                </div>
-                <div class="section-content">
-                    <div class="form-group">
-                        <label for="admin_nickname">Admin Nickname</label>
-                        <input type="text" id="admin_nickname" name="admin_nickname" value="<?php echo htmlspecialchars($config['admin_nickname'] ?? 'Admin'); ?>">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Admin Avatar</label>
-                        <?php if (!empty($config['admin_avatar'])): ?>
-                            <img src="../uploads/<?php echo htmlspecialchars($config['admin_avatar']); ?>" class="avatar-preview" alt="Avatar">
-                        <?php endif; ?>
-                        <input type="file" name="avatar">
-                    </div>
-                </div>
-
-                <div class="section-header">
-                    <span><strong>🔒 Security</strong></span>
-                </div>
-                <div class="section-content">
-                    <div class="form-group">
-                        <label for="new_password">Change Admin Password (leave blank to keep current)</label>
-                        <input type="password" id="new_password" name="new_password">
-                    </div>
-                </div>
-
-                <div style="padding: 15px;">
-                    <button type="submit" class="btn btn-primary">Save All Settings</button>
-                </div>
-            </div>
-        </form>
-
-        <div class="card" style="border-top: 4px solid #ffc107;">
-            <div class="section-header" style="background: #fff3cd;">
-                <span><strong>✨ Demo Content</strong></span>
-            </div>
-            <div class="section-content">
-                <p>New to the CMS? You can import demo content (posts, pages, and sample settings) to see how everything looks.</p>
-                <div class="warning" style="background: #fff3cd; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #ffeeba;">
-                    <strong>Note:</strong> This will NOT delete your existing content, but it will overwrite site settings with demo defaults.
-                </div>
-                <form method="POST" onsubmit="return confirm('Import demo content? This will update your site settings.')">
-                    <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
-                    <input type="hidden" name="action" value="import_demo">
-                    <button type="submit" class="btn" style="background: #ffc107; color: #000;">Import Demo Content</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-</body>
-</html>
+    </form>
+</div>
+</body></html>

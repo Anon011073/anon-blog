@@ -8,6 +8,7 @@ return [
     'name' => 'Simple Gallery',
     'version' => '1.0.0',
     'author' => 'AnonBlog Team',
+    'settings_url' => 'settings.php?plugin=simple-gallery',
     'hooks' => [
         'render_content' => function($content) {
             if (preg_match('/\[gallery ids="([^"]+)"\]/', $content, $matches)) {

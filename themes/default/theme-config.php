@@ -6,15 +6,16 @@ return [
     'name' => 'Default',
     'description' => 'The standard AnonBlog theme, clean and powerful.',
     'author' => 'AnonBlog Team',
-    'version' => '1.2.0',
+    'version' => '1.3.0',
     'options' => [
         [
             'name' => 'front_page_template',
-            'label' => 'Front Page Template',
+            'label' => 'Front Page Layout',
             'type' => 'select',
             'options' => [
-                'default' => 'Default (List + Sidebar)',
-                'grid' => 'Grid (2-3 Columns, No Sidebar)',
+                'default' => 'Default (1 Column + Sidebar)',
+                'grid' => 'Grid (3 Columns, No Sidebar)',
+                'grid_sidebar' => 'Grid with Sidebar (2 Columns + Sidebar)',
                 'single_column' => 'Single Column (No Sidebar)'
             ],
             'default' => 'default'

@@ -8,7 +8,7 @@ return [
     'name' => 'AnonTax',
     'version' => '1.0.0',
     'author' => 'AnonBlog Team',
-    'settings_url' => 'plugins.php?plugin=anon-tax&page=settings',
+    'settings_url' => 'settings.php?plugin=anon-tax',
     'hooks' => [
         'post_form_after' => function($post) {
             $categories = $post['categories'] ?? '';
@@ -34,12 +34,8 @@ return [
             $post_data['tags'] = sanitize($_POST['tags'] ?? '');
         },
         'post_meta_after' => function($post) {
-            if (!empty($post['categories'])) {
-                echo ' | Categories: ' . htmlspecialchars($post['categories']);
-            }
-            if (!empty($post['tags'])) {
-                echo ' | Tags: ' . htmlspecialchars($post['tags']);
-            }
+            if (!empty($post['categories'])) echo ' | Categories: ' . htmlspecialchars($post['categories']);
+            if (!empty($post['tags'])) echo ' | Tags: ' . htmlspecialchars($post['tags']);
         }
     ]
 ];

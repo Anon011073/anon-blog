@@ -103,9 +103,13 @@ $is_front_page = !isset($post) && !isset($page);
 $template = $opts['front_page_template'] ?? 'default';
 
 if ($is_front_page) {
-    if ($template !== 'default') $body_classes[] = 'no-sidebar';
+    // Index page: show sidebar only for 'default' and 'grid_sidebar'
+    if ($template !== 'default' && $template !== 'grid_sidebar') {
+        $body_classes[] = 'no-sidebar';
+    }
 } else {
-    if ($template === 'single_column' || ($opts['single_post_sidebar'] ?? 'yes') === 'no') {
+    // Single post/page: show sidebar only if opted in
+    if (($opts['single_post_sidebar'] ?? 'yes') === 'no') {
         $body_classes[] = 'no-sidebar';
     }
 }

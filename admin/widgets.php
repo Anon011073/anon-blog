@@ -102,8 +102,8 @@ $widget_links = $config['widget_links'] ?? [];
                         if ($active_theme !== 'default' && strpos($area, 'footer') === 0) continue;
                         // Hide upper/lower if default theme
                         if ($active_theme === 'default' && ($area === 'upper' || $area === 'lower')) continue;
-                        // Hide sidebar for Popeye specifically
-                        if ($active_theme === 'popeye' && $area === 'sidebar') continue;
+                        // Hide sidebar for themes that don't use it
+                        if (($active_theme === 'popeye' || $active_theme === 'darkling') && $area === 'sidebar') continue;
                     ?>
                         <div class="card">
                             <h3><?php echo ucfirst($area); ?></h3>

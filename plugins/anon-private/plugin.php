@@ -6,6 +6,7 @@
 
 return [
     'name' => 'AnonPrivate',
+    'settings_url' => 'settings.php?plugin=anon-private',
     'hooks' => [
         'system_init' => function() {
             $config = load_config();

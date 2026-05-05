@@ -7,6 +7,7 @@
 return [
     'name' => 'AnonSitemap',
     'version' => '1.0.0',
+    'settings_url' => 'settings.php?plugin=anon-sitemap',
     'hooks' => [
         'system_init' => function() {
             if (isset($_GET['sitemap'])) {

@@ -8,6 +8,7 @@ return [
     'name' => 'Likes/Dislikes',
     'version' => '1.0.0',
     'author' => 'AnonBlog Team',
+    'settings_url' => 'settings.php?plugin=likes',
     'hooks' => [
         'system_header' => function() {
             ?>
@@ -39,10 +40,8 @@ return [
                 $type = $_GET['vote_type'];
                 $file = __DIR__ . '/../../content/votes-' . $slug . '.json';
                 $votes = file_exists($file) ? json_decode(file_get_contents($file), true) : ['likes' => 0, 'dislikes' => 0];
-
                 if ($type === 'like') $votes['likes']++;
                 else if ($type === 'dislike') $votes['dislikes']++;
-
                 file_put_contents($file, json_encode($votes));
                 header('Content-Type: application/json');
                 echo json_encode(['success' => true, 'count' => ($type === 'like' ? $votes['likes'] : $votes['dislikes'])]);

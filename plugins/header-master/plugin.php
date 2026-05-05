@@ -8,6 +8,7 @@ return [
     'name' => 'Header Master',
     'version' => '1.0.0',
     'author' => 'AnonBlog Team',
+    'settings_url' => 'settings.php?plugin=header-master',
     'hooks' => [
         'system_header' => function() {
             $config = load_config();
@@ -17,20 +18,13 @@ return [
             <style>
                 header {
                     <?php if ($sticky): ?>
-                    position: sticky;
-                    top: 0;
-                    z-index: 1000;
+                    position: sticky; top: 0; z-index: 1000;
                     <?php endif; ?>
-
                     <?php if ($blur): ?>
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    background: rgba(255, 255, 255, 0.8);
+                    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.8);
                     <?php endif; ?>
                 }
-                body.dark header {
-                    background: rgba(30, 30, 30, 0.8);
-                }
+                body.dark header { background: rgba(30, 30, 30, 0.8); }
             </style>
             <?php
         }
