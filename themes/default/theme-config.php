@@ -6,17 +6,17 @@ return [
     'name' => 'Default',
     'description' => 'The standard AnonBlog theme, clean and powerful.',
     'author' => 'AnonBlog Team',
-    'version' => '1.3.0',
+    'version' => '1.4.0',
     'options' => [
         [
-            'name' => 'front_page_template',
+            'name' => 'front_page_layout',
             'label' => 'Front Page Layout',
             'type' => 'select',
             'options' => [
                 'default' => 'Default (1 Column + Sidebar)',
                 'grid' => 'Grid (3 Columns, No Sidebar)',
                 'grid_sidebar' => 'Grid with Sidebar (2 Columns + Sidebar)',
-                'single_column' => 'Single Column (No Sidebar)'
+                'single_column' => 'Single Column (1 Column, No Sidebar)'
             ],
             'default' => 'default'
         ],
@@ -29,28 +29,6 @@ return [
                 'no' => 'No'
             ],
             'default' => 'yes'
-        ],
-        [
-            'name' => 'header_sticky',
-            'label' => 'Sticky Header',
-            'type' => 'checkbox',
-            'default' => false
-        ],
-        [
-            'name' => 'header_blur',
-            'label' => 'Glassmorphism Header (Blur)',
-            'type' => 'checkbox',
-            'default' => false
-        ],
-        [
-            'name' => 'featured_image_position',
-            'label' => 'Featured Image Position',
-            'type' => 'select',
-            'options' => [
-                'top' => 'Above Title (Full Width)',
-                'left' => 'Left of Content (Thumbnail)'
-            ],
-            'default' => 'top'
         ],
         [
             'name' => 'site_title_font_size',
@@ -93,18 +71,6 @@ return [
             'label' => 'Body Font',
             'type' => 'font',
             'default' => 'Inter'
-        ],
-        [
-            'name' => 'title_font_size',
-            'label' => 'Post Title Font Size (px)',
-            'type' => 'number',
-            'default' => 32
-        ],
-        [
-            'name' => 'body_font_size',
-            'label' => 'Body Font Size (px)',
-            'type' => 'number',
-            'default' => 16
         ],
         [
             'name' => 'primary_color',

@@ -26,7 +26,7 @@ function get_pages() {
  * Get a single page by slug
  */
 function get_page($slug) {
-    $file = PAGES_DIR . $slug . '.json';
+    $file = PAGES_DIR . basename($slug) . '.json';
     if (file_exists($file)) {
         return json_decode(file_get_contents($file), true);
     }
@@ -49,7 +49,7 @@ function save_page($data) {
  * Delete a page
  */
 function delete_page($slug) {
-    $file = PAGES_DIR . $slug . '.json';
+    $file = PAGES_DIR . basename($slug) . '.json';
     if (file_exists($file)) {
         return unlink($file);
     }

@@ -38,7 +38,7 @@ $p = (int)($_GET['p'] ?? 1);
 
 if ($post_slug) {
     // Single post page
-    $post = get_post($post_slug);
+    $post = get_post(basename($post_slug));
     if ($post) {
         render_theme('post', ['post' => $post, 'config' => $config]);
     } else {
@@ -48,7 +48,7 @@ if ($post_slug) {
 } elseif ($page_slug) {
     // Static page
     require_once __DIR__ . '/app/pages.php';
-    $page = get_page($page_slug);
+    $page = get_page(basename($page_slug));
     if ($page) {
         render_theme('page', ['page' => $page, 'config' => $config]);
     } else {

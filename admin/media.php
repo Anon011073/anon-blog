@@ -143,7 +143,7 @@ usort($images, function($a, $b) {
 
         <?php
         $plugins = get_enabled_plugins_data();
-        if (isset($plugins['gallery'])): ?>
+        if (isset($plugins['simple-gallery'])): ?>
         <div class="card" id="gallery-helper" style="margin-top: 40px; border-top: 5px solid #007bff;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0;">🖼️ Gallery Shortcode Helper</h3>
@@ -192,11 +192,11 @@ usort($images, function($a, $b) {
 
                 if (selectedImages.length === 0) {
                     list.innerText = 'No images selected.';
-                    code.innerText = '[gallery images=""]';
+                    code.innerText = '[gallery ids=""]';
                     countBadge.innerText = '0 selected';
                 } else {
                     list.innerText = selectedImages.join(', ');
-                    code.innerText = '[gallery images="' + selectedImages.join(', ') + '"]';
+                    code.innerText = '[gallery ids="' + selectedImages.join(', ') + '"]';
                     countBadge.innerText = selectedImages.length + ' selected';
                 }
             }

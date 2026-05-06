@@ -17,45 +17,29 @@ if ($plugin_to_configure && isset($all_plugins_data[$plugin_to_configure])) {
     $p_data = $all_plugins_data[$plugin_to_configure];
     $plugin_settings_file = __DIR__ . '/../plugins/' . $plugin_to_configure . '/admin/settings.php';
 
-    if (file_exists($plugin_settings_file)) {
-        include $plugin_settings_file;
-        exit;
-    } else {
-        // Fallback for Prism if no file (backwards compatibility for my previous build)
-        if ($plugin_to_configure === 'prism') {
-            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_plugin'])) {
-                update_config(['prism_theme' => $_POST['prism_theme']]);
-                $success = "Prism settings saved.";
-                $config = load_config();
-            }
-            ?>
-            <!DOCTYPE html>
-            <html lang="en"><head><meta charset="UTF-8"><title>Prism Settings</title><link rel="stylesheet" href="style.css"></head><body>
-            <?php include "sidebar.php"; ?>
-            <div style="margin-left:310px; padding:2rem;">
-                <h1>Prism Settings</h1>
-                <?php if ($success): ?><div class="alert alert-success"><?php echo $success; ?></div><?php endif; ?>
-                <div class="card" style="background:#fff; padding:20px; border-radius:8px;">
-                    <form method="POST">
-                        <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
-                        <label>Prism Theme</label>
-                        <select name="prism_theme" style="width:100%; padding:10px; margin-top:10px;">
-                            <option value="prism" <?php echo ($config['prism_theme'] ?? '') === 'prism' ? 'selected' : ''; ?>>Default</option>
-                            <option value="okaidia" <?php echo ($config['prism_theme'] ?? '') === 'okaidia' ? 'selected' : ''; ?>>Okaidia (Dark)</option>
-                        </select>
-                        <br><br><button type="submit" name="save_plugin" class="btn btn-primary">Save Settings</button>
-                    </form>
-                </div>
-            </div>
-            </body></html>
-            <?php exit;
-        }
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head><meta charset="UTF-8"><title><?php echo htmlspecialchars($p_data['name']); ?> Settings</title><link rel="stylesheet" href="style.css"></head>
+    <body>
+    <?php include "sidebar.php"; ?>
+    <div style="margin-left:310px; padding:2rem; margin-top:50px;">
+        <h1><?php echo htmlspecialchars($p_data['name']); ?> Settings</h1>
+        <?php if (isset($_GET['success'])): ?><div class="alert alert-success">Settings saved successfully.</div><?php endif; ?>
 
-        echo "<!DOCTYPE html><html lang='en'><head><link rel='stylesheet' href='style.css'></head><body>";
-        include "sidebar.php";
-        echo "<div style='margin-left:310px; padding:2rem;'><h1>Settings for ".htmlspecialchars($p_data['name'])."</h1><p>No configurable options for this plugin.</p><a href='plugins.php'>&larr; Back to Plugins</a></div></body></html>";
-        exit;
-    }
+        <?php
+        if (file_exists($plugin_settings_file)) {
+            // The plugin settings file should only contain the form content or specific logic
+            include $plugin_settings_file;
+        } else {
+            echo "<div class='card'><p>No configurable options for this plugin.</p></div>";
+        }
+        ?>
+        <br><a href="plugins.php" class="btn">&larr; Back to Plugins</a>
+    </div>
+    </body></html>
+    <?php
+    exit;
 }
 // --- END PLUGIN SETTINGS HANDLER ---
 
@@ -108,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 <body>
 <?php include "sidebar.php"; ?>
 <div class="main-content">
-    <h1>Settings</h1>
+    <h1>General Settings</h1>
     <?php if ($success): ?><div class="alert alert-success"><?php echo $success; ?></div><?php endif; ?>
     <form method="POST" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="<?php echo get_csrf_token(); ?>">
@@ -128,7 +112,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <div class="profile-row">
                 <div>
                     <label>Avatar</label><br>
-                    <img src="../uploads/<?php echo $config['admin_avatar'] ?? ''; ?>" class="avatar-preview" onerror="this.src='https://via.placeholder.com/80'"><br>
+                    <?php if (!empty($config['admin_avatar'])): ?>
+                        <img src="../uploads/<?php echo htmlspecialchars($config['admin_avatar']); ?>" class="avatar-preview">
+                    <?php else: ?>
+                        <div class="avatar-preview" style="background:#eee; display:flex; align-items:center; justify-content:center;">No Image</div>
+                    <?php endif; ?>
                     <input type="file" name="avatar" style="margin-top:10px;">
                 </div>
                 <div style="flex:1;">
